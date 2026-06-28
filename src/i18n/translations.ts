@@ -15,6 +15,8 @@ export const translations = {
     scanTitle: 'Scan to check in', scanPrompt: 'Point the camera at your member QR.',
     cameraDenied: 'Camera permission denied', useSearchInstead: 'Use manual search instead',
     unknownMember: 'Unknown member code', enableCamera: 'Enable camera',
+    settings: 'Settings', theme: 'Appearance', language: 'Language',
+    themeLight: 'Light', themeDark: 'Dark', themeSystem: 'System',
   },
   es: {
     welcome: 'Bienvenido a', todaysClasses: 'Clases de hoy', attendees: 'asistentes',
@@ -32,6 +34,8 @@ export const translations = {
     scanTitle: 'Escanea para hacer check-in', scanPrompt: 'Apunta la cámara a tu QR de socio.',
     cameraDenied: 'Permiso de cámara denegado', useSearchInstead: 'Usar la búsqueda manual',
     unknownMember: 'Código de socio desconocido', enableCamera: 'Activar cámara',
+    settings: 'Ajustes', theme: 'Apariencia', language: 'Idioma',
+    themeLight: 'Claro', themeDark: 'Oscuro', themeSystem: 'Sistema',
   },
   it: {
     welcome: 'Benvenuto a', todaysClasses: 'Lezioni di oggi', attendees: 'partecipanti',
@@ -49,6 +53,8 @@ export const translations = {
     scanTitle: 'Scansiona per il check-in', scanPrompt: 'Inquadra il QR del socio.',
     cameraDenied: 'Permesso fotocamera negato', useSearchInstead: 'Usa la ricerca manuale',
     unknownMember: 'Codice socio sconosciuto', enableCamera: 'Attiva fotocamera',
+    settings: 'Impostazioni', theme: 'Aspetto', language: 'Lingua',
+    themeLight: 'Chiaro', themeDark: 'Scuro', themeSystem: 'Sistema',
   },
 } as const;
 

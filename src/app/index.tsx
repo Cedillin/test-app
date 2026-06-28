@@ -1,5 +1,7 @@
 import { ScrollView, Text, View, StyleSheet, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { spacing, radius, fonts } from '../lib/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useI18n } from '../context/I18nContext';
@@ -17,29 +19,34 @@ function CardWithCount({ session }: { session: ClassSession }) {
 }
 
 export default function Home() {
-  const { colors, resolved, setMode } = useTheme();
-  const { t, lang, setLang } = useI18n();
+  const { colors } = useTheme();
+  const { t, lang } = useI18n();
+  const router = useRouter();
   const hydrated = useHydrated();
   const classes = useClasses();
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={[styles.date, { color: colors.muted }]}>{formatHeaderDate(new Date(), lang)}</Text>
-        <View style={styles.switchRow}>
-          <Pressable onPress={() => setMode(resolved === 'dark' ? 'light' : 'dark')} hitSlop={10}>
-            <Text style={[styles.switchIcon, { color: colors.text }]}>{resolved === 'dark' ? '☀️' : '🌙'}</Text>
+        <View style={styles.topRow}>
+          <Text style={[styles.date, { color: colors.muted }]}>{formatHeaderDate(new Date(), lang)}</Text>
+          <Pressable
+            onPress={() => router.push('/settings')}
+            hitSlop={10}
+            accessibilityLabel={t('settings')}
+            style={[styles.gear, { backgroundColor: colors.card }]}
+          >
+            <Ionicons name="settings-outline" size={20} color={colors.text} />
           </Pressable>
-          <View style={styles.langGroup}>
-            {(['es', 'en', 'it'] as const).map((l) => (
-              <Pressable key={l} onPress={() => setLang(l)} hitSlop={6}>
-                <Text style={[styles.lang, { color: l === lang ? colors.accent : colors.muted,
-                  fontFamily: l === lang ? fonts.sansBold : fonts.mono }]}>{l.toUpperCase()}</Text>
-              </Pressable>
-            ))}
-          </View>
         </View>
-        <Text style={[styles.welcome, { color: colors.text }]}>{t('welcome')} Aranha</Text>
+
+        <View style={styles.welcomeRow}>
+          <Text style={[styles.welcome, { color: colors.text }]}>{t('welcome')} </Text>
+          <View style={[styles.logo, { backgroundColor: colors.text }]}>
+            <MaterialCommunityIcons name="spider" size={17} color={colors.background} />
+          </View>
+          <Text style={[styles.welcome, { color: colors.text }]}> Aranha</Text>
+        </View>
 
         <HeroCard
           label={t('heroLabel')}
@@ -75,12 +82,12 @@ export default function Home() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   scroll: { padding: spacing.lg, gap: spacing.md },
+  topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   date: { fontFamily: fonts.mono, fontSize: 11, letterSpacing: 1 },
-  switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.sm },
-  switchIcon: { fontSize: 20 },
-  langGroup: { flexDirection: 'row', gap: spacing.sm },
-  lang: { fontSize: 13 },
-  welcome: { fontFamily: fonts.sansBlack, fontSize: 34 },
+  gear: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
+  welcomeRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', marginTop: spacing.xs },
+  welcome: { fontFamily: fonts.sansBold, fontSize: 30, letterSpacing: -0.5, lineHeight: 36 },
+  logo: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
   section: { fontFamily: fonts.sansBold, fontSize: 22, marginTop: spacing.sm },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
   cell: { width: '47%', flexGrow: 1 },

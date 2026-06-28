@@ -23,6 +23,7 @@ function ThemedStack() {
       <StatusBar style={resolved === 'dark' ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right', contentStyle: { backgroundColor: colors.background } }}>
         <Stack.Screen name="success" options={{ animation: 'fade' }} />
+        <Stack.Screen name="settings" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
       </Stack>
     </>
   );
