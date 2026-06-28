@@ -14,7 +14,7 @@ export const translations = {
     seeYou: 'See you on the mat.', seeYouNamed: 'See you on the mat, {name}.', returningToStart: 'Returning to start…',
     scanTitle: 'Scan to check in', scanPrompt: 'Point the camera at your member QR.',
     cameraDenied: 'Camera permission denied', useSearchInstead: 'Use manual search instead',
-    unknownMember: 'Unknown member code',
+    unknownMember: 'Unknown member code', enableCamera: 'Enable camera',
   },
   es: {
     welcome: 'Bienvenido a', todaysClasses: 'Clases de hoy', attendees: 'asistentes',
@@ -31,7 +31,7 @@ export const translations = {
     seeYou: 'Nos vemos en el tatami.', seeYouNamed: 'Nos vemos en el tatami, {name}.', returningToStart: 'Volviendo al inicio…',
     scanTitle: 'Escanea para hacer check-in', scanPrompt: 'Apunta la cámara a tu QR de socio.',
     cameraDenied: 'Permiso de cámara denegado', useSearchInstead: 'Usar la búsqueda manual',
-    unknownMember: 'Código de socio desconocido',
+    unknownMember: 'Código de socio desconocido', enableCamera: 'Activar cámara',
   },
   it: {
     welcome: 'Benvenuto a', todaysClasses: 'Lezioni di oggi', attendees: 'partecipanti',
@@ -48,7 +48,7 @@ export const translations = {
     seeYou: 'Ci vediamo sul tatami.', seeYouNamed: 'Ci vediamo sul tatami, {name}.', returningToStart: 'Ritorno alla home…',
     scanTitle: 'Scansiona per il check-in', scanPrompt: 'Inquadra il QR del socio.',
     cameraDenied: 'Permesso fotocamera negato', useSearchInstead: 'Usa la ricerca manuale',
-    unknownMember: 'Codice socio sconosciuto',
+    unknownMember: 'Codice socio sconosciuto', enableCamera: 'Attiva fotocamera',
   },
 } as const;
 

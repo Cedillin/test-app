@@ -28,7 +28,7 @@ export default function SearchScreen() {
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
       <ScreenHeader title={t('findYourName')} onBack={() => router.back()} />
-      <View style={styles.search}><SearchBar value={q} onChangeText={setQ} /></View>
+      <View style={styles.search}><SearchBar value={q} onChangeText={setQ} placeholder={t('searchPlaceholder')} /></View>
       <FlatList
         data={results}
         keyExtractor={(m) => m.id}

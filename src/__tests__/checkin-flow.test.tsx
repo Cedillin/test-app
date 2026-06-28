@@ -56,8 +56,8 @@ test('search filters members and shows no-results', async () => {
 test('check-in navigates to success', async () => {
   await renderWithProviders(<CheckInScreen />);
   // Wait for hydration — member + session must load before the CTA renders
-  await waitFor(() => expect(screen.getByText(/Check In/)).toBeTruthy());
-  fireEvent.press(screen.getByText(/Check In/));
+  const cta = await screen.findByText(/Check In/);
+  fireEvent.press(cta);
   await waitFor(() =>
     expect(mockReplace).toHaveBeenCalledWith(
       expect.objectContaining({ pathname: '/success' }),

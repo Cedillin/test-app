@@ -3,6 +3,7 @@ import { Text, View, StyleSheet } from 'react-native';
 import { MotiView } from 'moti';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { spacing, fonts } from '../lib/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useI18n } from '../context/I18nContext';
@@ -22,6 +23,7 @@ export default function SuccessScreen() {
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.topBar }]}>
+      <StatusBar style="light" />
       <MotiView
         from={{ opacity: 0, scale: 0.6 }}
         animate={{ opacity: 1, scale: 1 }}

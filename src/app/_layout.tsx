@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, useColorScheme } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import {
@@ -8,23 +8,28 @@ import {
 } from '@expo-google-fonts/geist';
 import { GeistMono_400Regular } from '@expo-google-fonts/geist-mono';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { CheckInProvider } from '../context/CheckInContext';
 import { ThemeProvider, useTheme } from '../context/ThemeContext';
 import { I18nProvider } from '../context/I18nContext';
-import { lightColors } from '../lib/theme';
+import { lightColors, darkColors } from '../lib/theme';
 
 SplashScreen.preventAutoHideAsync();
 
 function ThemedStack() {
-  const { colors } = useTheme();
+  const { colors, resolved } = useTheme();
   return (
-    <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right', contentStyle: { backgroundColor: colors.background } }}>
-      <Stack.Screen name="success" options={{ animation: 'fade' }} />
-    </Stack>
+    <>
+      <StatusBar style={resolved === 'dark' ? 'light' : 'dark'} />
+      <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right', contentStyle: { backgroundColor: colors.background } }}>
+        <Stack.Screen name="success" options={{ animation: 'fade' }} />
+      </Stack>
+    </>
   );
 }
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     Geist_400Regular, Geist_500Medium, Geist_600SemiBold, Geist_700Bold, Geist_900Black,
     GeistMono_400Regular,
@@ -33,7 +38,8 @@ export default function RootLayout() {
   useEffect(() => { if (loaded) SplashScreen.hideAsync(); }, [loaded]);
 
   if (!loaded) {
-    return <View style={styles.center}><ActivityIndicator /></View>;
+    const bg = colorScheme === 'dark' ? darkColors.background : lightColors.background;
+    return <View style={[styles.center, { backgroundColor: bg }]}><ActivityIndicator /></View>;
   }
 
   return (
@@ -50,5 +56,5 @@ export default function RootLayout() {
 }
 
 const styles = StyleSheet.create({
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: lightColors.background },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });

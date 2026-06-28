@@ -44,7 +44,7 @@ export default function ScanScreen() {
           <Text style={[styles.msg, { color: colors.text }]}>{t('cameraDenied')}</Text>
           <PrimaryButton label={t('useSearchInstead')} onPress={() => router.replace(`/class/${id}/search`)} />
           {!permission.canAskAgain ? null : (
-            <Text onPress={requestPermission} style={[styles.link, { color: colors.accent }]}>{t('scan')}</Text>
+            <Text onPress={requestPermission} style={[styles.link, { color: colors.accent }]}>{t('enableCamera')}</Text>
           )}
         </View>
       </SafeAreaView>
