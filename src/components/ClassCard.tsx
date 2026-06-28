@@ -16,10 +16,10 @@ export function ClassCard({ session, attendees }: { session: ClassSession; atten
     <Link href={`/class/${session.id}`} asChild>
       <Pressable style={StyleSheet.flatten([styles.card, { backgroundColor: colors.card }])}>
         <View style={styles.headRow}>
-          <Avatar uri={`https://i.pravatar.cc/96?u=${encodeURIComponent(session.instructor)}`} name={session.instructor} size={36} />
+          <Avatar uri={`https://i.pravatar.cc/96?u=${encodeURIComponent(session.instructor)}`} name={session.instructor} size={32} />
           <View style={styles.headText}>
             <Text style={[styles.name, { color: colors.text }]} numberOfLines={2}>{session.name}</Text>
-            <Text style={[styles.time, { color: colors.muted }]}>{formatTimeRange(session.startTime, session.endTime)}</Text>
+            <Text style={[styles.time, { color: colors.muted }]} numberOfLines={1}>{formatTimeRange(session.startTime, session.endTime)}</Text>
             <View style={styles.tags}>
               {session.tags.map((tag) => <TagPill key={tag} label={tag} />)}
             </View>
@@ -41,11 +41,11 @@ export function ClassCard({ session, attendees }: { session: ClassSession; atten
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: radius.card, padding: spacing.md, gap: spacing.sm },
+  card: { flex: 1, borderRadius: radius.card, padding: spacing.md, gap: spacing.sm },
   headRow: { flexDirection: 'row', gap: spacing.sm },
   headText: { flex: 1, gap: 3 },
-  name: { fontFamily: fonts.sansBold, fontSize: 15, lineHeight: 19 },
-  time: { fontFamily: fonts.sans, fontSize: 13 },
+  name: { fontFamily: fonts.sansBold, fontSize: 14, lineHeight: 18 },
+  time: { fontFamily: fonts.sans, fontSize: 12 },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: spacing.xs },
   footer: { gap: spacing.xs },
   footItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
