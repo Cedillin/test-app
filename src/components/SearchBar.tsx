@@ -1,8 +1,10 @@
 import { TextInput, StyleSheet } from 'react-native';
-import { colors, radius, spacing, fonts } from '../lib/theme';
+import { useTheme } from '../context/ThemeContext';
+import { radius, spacing, fonts } from '../lib/theme';
 
 export function SearchBar({ value, onChangeText, placeholder = 'Search your name…' }:
   { value: string; onChangeText: (t: string) => void; placeholder?: string }) {
+  const { colors } = useTheme();
   return (
     <TextInput
       value={value}
@@ -10,14 +12,14 @@ export function SearchBar({ value, onChangeText, placeholder = 'Search your name
       placeholder={placeholder}
       placeholderTextColor={colors.muted}
       autoFocus
-      style={styles.input}
+      style={[styles.input, { backgroundColor: colors.card, color: colors.text }]}
     />
   );
 }
 
 const styles = StyleSheet.create({
   input: {
-    backgroundColor: colors.card, borderRadius: radius.card, paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md, fontFamily: fonts.sans, fontSize: 18, color: colors.text,
+    borderRadius: radius.card, paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md, fontFamily: fonts.sans, fontSize: 18,
   },
 });
