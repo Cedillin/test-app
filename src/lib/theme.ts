@@ -8,6 +8,8 @@ export const colors = {
   white: '#FFFFFF',
   border: '#E5E5E5',
   tagDefault: { bg: '#F4F4F5', fg: '#525252' },
+  success: '#16A34A',
+  successBg: '#DCFCE7',
 } as const;
 
 const TAGS: Record<string, { bg: string; fg: string }> = {

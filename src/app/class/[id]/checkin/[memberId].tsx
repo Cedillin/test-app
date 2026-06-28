@@ -19,7 +19,7 @@ export default function CheckInScreen() {
     return (
       <SafeAreaView style={styles.safe} edges={['top']}>
         <ScreenHeader title="Check in" onBack={() => router.back()} />
-        <EmptyState title="Member not found" />
+        <EmptyState title={!member ? 'Member not found' : 'Class not found'} />
       </SafeAreaView>
     );
   }

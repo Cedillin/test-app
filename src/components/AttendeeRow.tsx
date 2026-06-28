@@ -13,8 +13,8 @@ export function AttendeeRow({ name, uri, status, at }:
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.time}>{time}</Text>
       </View>
-      <View style={[styles.badge, { backgroundColor: confirmed ? '#DCFCE7' : colors.card }]}>
-        <Text style={[styles.badgeText, { color: confirmed ? '#16A34A' : colors.muted }]}>
+      <View style={[styles.badge, { backgroundColor: confirmed ? colors.successBg : colors.card }]}>
+        <Text style={[styles.badgeText, { color: confirmed ? colors.success : colors.muted }]}>
           {confirmed ? 'Confirmed' : 'Registered'}
         </Text>
       </View>
