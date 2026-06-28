@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import * as Localization from 'expo-localization';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { translations, type Lang, type TKey } from '../i18n/translations';
@@ -22,14 +22,19 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     AsyncStorage.getItem(KEY).then((v) => { if (isLang(v)) setLangState(v); });
   }, []);
 
-  const t = (key: TKey, vars?: Record<string, string>) => {
+  const t = useCallback((key: TKey, vars?: Record<string, string>) => {
     let s: string = translations[lang][key] ?? translations.en[key] ?? key;
-    if (vars) for (const k in vars) s = s.replace(`{${k}}`, vars[k]);
+    if (vars) for (const k in vars) s = s.replaceAll(`{${k}}`, vars[k]);
     return s;
-  };
-  const setLang = (l: Lang) => { setLangState(l); AsyncStorage.setItem(KEY, l).catch(() => {}); };
+  }, [lang]);
+  const setLang = useCallback((l: Lang) => {
+    setLangState(l);
+    AsyncStorage.setItem(KEY, l).catch(() => {});
+  }, []);
 
-  return <Ctx.Provider value={{ t, lang, setLang }}>{children}</Ctx.Provider>;
+  const value = useMemo(() => ({ t, lang, setLang }), [t, lang, setLang]);
+
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
 export function useI18n() {

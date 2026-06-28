@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useColorScheme } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { lightColors, darkColors, type Palette } from '../lib/theme';
@@ -22,9 +22,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const resolved: 'light' | 'dark' = mode === 'system' ? system : mode;
   const colors = resolved === 'dark' ? darkColors : lightColors;
-  const setMode = (m: Mode) => { setModeState(m); AsyncStorage.setItem(KEY, m).catch(() => {}); };
+  const setMode = useCallback((m: Mode) => {
+    setModeState(m);
+    AsyncStorage.setItem(KEY, m).catch(() => {});
+  }, []);
 
-  return <Ctx.Provider value={{ colors, mode, resolved, setMode }}>{children}</Ctx.Provider>;
+  const value = useMemo(
+    () => ({ colors, mode, resolved, setMode }),
+    [colors, mode, resolved, setMode],
+  );
+
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
 export function useTheme() {
