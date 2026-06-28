@@ -115,11 +115,12 @@ registered roster entry (same person never appears twice). Count shown is
 **`unique memberIds after merge / capacity`** — never `registered + confirmed`,
 which would double-count anyone who was registered and then confirmed.
 
-**`date` / "today"**: `classes.json` ships as **today's fixtures**; the Home
-header date is computed from the device clock. `date` is included so the merge
-logic and check-in storage can key on the real day (matters for persistence,
-below) and so the model is honest about "today's classes". Multi-day filtering
-is out of scope — we render the bundled sessions as today's.
+**`date` / "today"**: `classes.json` does **not** bake a fixed calendar date
+(it would age). Fixtures are authored without a date; on load each session is
+**normalized to `todayIso`** (device clock) so it's always "today". `date` then
+keys the merge logic and check-in storage on the real day (matters for
+persistence, below). The Home header date is computed from the same clock.
+Multi-day filtering is out of scope — bundled sessions always render as today's.
 
 ## Persistence (AsyncStorage)
 
@@ -148,7 +149,7 @@ Check-ins are the only mutable, persisted state.
 
 | Route | Screen | Key content |
 |---|---|---|
-| `/class/[id]/scan` | QR (mock) | **Class-scoped** — `classId` comes from the route, so the QR payload only carries `memberId`. expo-camera reads it → resolve member → check-in → success. Unknown/invalid `memberId` → error. No camera permission → fall back to manual search. The Home "Pro tip" becomes the entry point once this exists. |
+| `/class/[id]/scan` | QR (mock) | **Class-scoped** — `classId` comes from the route, so the QR payload only carries `memberId`. expo-camera reads it → resolve member → check-in → success. Unknown/invalid `memberId` → error. No camera permission → fall back to manual search. Entry point is a **"Scan" button on the Class screen** (next to "Find your name"); the Home "Pro tip" stays **informational** so the `classId` ambiguity never reappears. |
 
 ### Navigation flow
 
@@ -180,8 +181,9 @@ Home ─tap class─▶ Class ─"Find your name"─▶ Search ─pick member─
 - QR with unknown `memberId`: show error, return to scan/home.
 - Auto-reset must cancel its timer if the user navigates away manually.
 
-## Testing
+## Testing (Bonus — Phase 2)
 
+Not part of the locked Core; build only after the core flow is polished.
 Integration tests (@testing-library/react-native):
 1. Critical flow: open class → "Find your name" → search → select → Check In →
    success → reset to Home.
