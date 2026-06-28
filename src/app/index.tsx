@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
+import { ScrollView, Text, View, StyleSheet, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -24,8 +24,6 @@ export default function Home() {
   const router = useRouter();
   const hydrated = useHydrated();
   const classes = useClasses();
-  const { width } = useWindowDimensions();
-  const twoCol = width >= 600;
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
@@ -65,7 +63,7 @@ export default function Home() {
         ) : (
           <View style={styles.grid}>
             {classes.map((c) => (
-              <View key={c.id} style={[styles.cell, { flexBasis: twoCol ? '47%' : '100%' }]}><CardWithCount session={c} /></View>
+              <View key={c.id} style={styles.cell}><CardWithCount session={c} /></View>
             ))}
           </View>
         )}
@@ -100,7 +98,7 @@ const styles = StyleSheet.create({
   logo: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
   section: { fontFamily: fonts.sansBold, fontSize: 22, marginTop: spacing.sm },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
-  cell: { flexGrow: 1 },
+  cell: { flexBasis: '47%', flexGrow: 1 },
   tip: { flexDirection: 'row', borderWidth: 1, borderRadius: radius.card, padding: spacing.md, marginTop: spacing.sm },
   tipText: { fontFamily: fonts.sans, fontSize: 13, flex: 1 },
   tipBold: { fontFamily: fonts.sansSemi },
