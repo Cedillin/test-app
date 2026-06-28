@@ -11,7 +11,7 @@ export function PrimaryButton({ label, onPress, disabled }: { label: string; onP
       disabled={disabled}
       style={({ pressed }) => [styles.btn, { backgroundColor: colors.text }, pressed && styles.pressed, disabled && styles.disabled]}
     >
-      <Text style={[styles.label, { color: colors.white }]}>{label}</Text>
+      <Text style={[styles.label, { color: colors.background }]}>{label}</Text>
     </Pressable>
   );
 }
