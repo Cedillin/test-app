@@ -68,6 +68,14 @@ export default function Home() {
           </View>
         )}
 
+        <HeroCard
+          label={t('storeLabel')}
+          title={t('storeTitle')}
+          subtitle={t('storeSubtitle')}
+          image="https://images.unsplash.com/photo-1517438476312-10d79c077509?w=1200"
+          tint="rgba(150,12,12,0.5)"
+        />
+
         <View style={[styles.tip, { borderColor: colors.border }]}>
           <Text style={[styles.tipText, { color: colors.muted }]}>
             <Text style={[styles.tipBold, { color: colors.text }]}>{t('proTipBold')}</Text>

@@ -2,12 +2,12 @@ import { ImageBackground, Text, View, StyleSheet } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { radius, spacing, fonts } from '../lib/theme';
 
-export function HeroCard({ label, title, subtitle, image }:
-  { label: string; title: string; subtitle: string; image: string }) {
+export function HeroCard({ label, title, subtitle, image, tint }:
+  { label: string; title: string; subtitle: string; image: string; tint?: string }) {
   const { colors } = useTheme();
   return (
     <ImageBackground source={{ uri: image }} style={styles.bg} imageStyle={styles.img}>
-      <View style={styles.overlay} />
+      <View style={[styles.overlay, tint ? { backgroundColor: tint } : null]} />
       <View style={styles.content}>
         <Text style={[styles.label, { color: colors.white }]}>{label}</Text>
         <Text style={[styles.title, { color: colors.white }]}>{title}</Text>

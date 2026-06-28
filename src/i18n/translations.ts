@@ -17,6 +17,8 @@ export const translations = {
     unknownMember: 'Unknown member code', enableCamera: 'Enable camera',
     settings: 'Settings', theme: 'Appearance', language: 'Language',
     themeLight: 'Light', themeDark: 'Dark', themeSystem: 'System',
+    storeLabel: 'STORE', storeTitle: 'Aranha x MAAT Store',
+    storeSubtitle: 'New drop. Gear up — rashguards, gis and more.',
   },
   es: {
     welcome: 'Bienvenido a', todaysClasses: 'Clases de hoy', attendees: 'asistentes',
@@ -36,6 +38,8 @@ export const translations = {
     unknownMember: 'Código de socio desconocido', enableCamera: 'Activar cámara',
     settings: 'Ajustes', theme: 'Apariencia', language: 'Idioma',
     themeLight: 'Claro', themeDark: 'Oscuro', themeSystem: 'Sistema',
+    storeLabel: 'TIENDA', storeTitle: 'Aranha x MAAT Store',
+    storeSubtitle: 'Nueva colección. Equípate: rashguards, kimonos y más.',
   },
   it: {
     welcome: 'Benvenuto a', todaysClasses: 'Lezioni di oggi', attendees: 'partecipanti',
@@ -55,6 +59,8 @@ export const translations = {
     unknownMember: 'Codice socio sconosciuto', enableCamera: 'Attiva fotocamera',
     settings: 'Impostazioni', theme: 'Aspetto', language: 'Lingua',
     themeLight: 'Chiaro', themeDark: 'Scuro', themeSystem: 'Sistema',
+    storeLabel: 'STORE', storeTitle: 'Aranha x MAAT Store',
+    storeSubtitle: 'Nuova collezione. Attrezzati: rashguard, gi e altro.',
   },
 } as const;
 

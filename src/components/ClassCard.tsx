@@ -16,7 +16,7 @@ export function ClassCard({ session, attendees }: { session: ClassSession; atten
     <Link href={`/class/${session.id}`} asChild>
       <Pressable style={StyleSheet.flatten([styles.card, { backgroundColor: colors.card }])}>
         <View style={styles.headRow}>
-          <Avatar uri={`https://i.pravatar.cc/96?u=${encodeURIComponent(session.instructor)}`} name={session.instructor} size={44} />
+          <Avatar uri={`https://i.pravatar.cc/96?u=${encodeURIComponent(session.instructor)}`} name={session.instructor} size={40} />
           <View style={styles.headText}>
             <Text style={[styles.name, { color: colors.text }]} numberOfLines={2}>{session.name}</Text>
             <Text style={[styles.time, { color: colors.muted }]}>{formatTimeRange(session.startTime, session.endTime)}</Text>
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   name: { fontFamily: fonts.sansBold, fontSize: 15, lineHeight: 19 },
   time: { fontFamily: fonts.sans, fontSize: 13 },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: spacing.xs },
-  footer: { gap: spacing.xs },
-  footItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm },
+  footItem: { flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 1 },
   meta: { fontFamily: fonts.sans, fontSize: 12, flexShrink: 1 },
 });
