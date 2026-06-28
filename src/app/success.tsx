@@ -20,7 +20,7 @@ export default function SuccessScreen() {
   }, [router]);
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: colors.text }]}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.topBar }]}>
       <View style={styles.body}>
         <Text style={[styles.check, { color: colors.white }]}>✓</Text>
         <Text style={[styles.title, { color: colors.white }]}>

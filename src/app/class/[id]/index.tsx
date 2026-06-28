@@ -30,7 +30,7 @@ export default function ClassScreen() {
   if (!session) {
     return (
       <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
-        <ScreenHeader title={t('classNotFound')} onBack={() => router.back()} />
+        <ScreenHeader title="" onBack={() => router.back()} />
         <EmptyState title={t('classNotFound')} />
       </SafeAreaView>
     );
