@@ -46,3 +46,7 @@ example
 .superpowers/
 .codegraph/
 .cursor/
+.claude/
+.remember/
+AGENTS.md
+CLAUDE.md

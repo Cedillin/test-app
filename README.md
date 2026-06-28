@@ -1,301 +1,141 @@
-# MAAT's Kiosk Application
+# MAAT Gym Kiosk
 
-> **Time-box**: Maximum 2 days of work
-> **AI tools**: Encouraged
+A tablet **kiosk app** where gym members self-check-in to today's classes. A member walks up, picks a class, finds their name (or scans a QR), confirms — and the kiosk shows a success screen that auto-resets to "ready".
 
-## Table of Contents
+Built with **Expo (React Native) + TypeScript**. Take-home challenge, time-boxed to ~2 days.
 
-- [Overview](#overview)
-- [Requirements](#requirements)
-- [Technical Specifications](#technical-specifications)
-- [Design Guidelines](#design-guidelines)
-- [Evaluation Criteria](#evaluation-criteria)
-- [Deliverables](#deliverables)
+## 🔗 Live demo
 
-## Overview
+- **App (web build):** https://cedillin.github.io/test-app/
+- **Interactive design & decisions guide:** https://cedillin.github.io/test-app/guide.html
+  *(brainstorming → execution plan → Jira-style board → 5 PM/CEO/dev/QA personas → an interactive app mockup → the Figma reference)*
 
-Build a **Gym Kiosk application** that allows gym members to check in for today's classes. This project tests your ability to:
+> The web build is for quick previewing; the camera/QR step is a no-op on web. For the full native experience (and QR), run it in Expo Go — see [Run it](#-run-it-step-by-step).
 
-- Translate design references into functional UI
-- Build intuitive user flows
-- Write clean, maintainable code
-- Make sensible product decisions within time constraints
+The design follows the provided [Figma concept](https://www.figma.com/design/yZiTpnsOb9E8v0lUHRHNB9/MAAT-Kiosk-Concept?node-id=0-1&m=dev) and the [Geist](https://github.com/vercel/geist-font/) font.
 
-You will receive a **Figma file featuring the initial screen**. This is **not a complete design system**, but a reference for visual style, spacing, tone, and overall approach. Your task is to follow this visual language and creatively extend it to additional screens.
+## ✨ Features
 
-## Requirements
+- **Full 5-screen kiosk flow:** Home → Class → Member Search → Check-In → Success (auto-resets to Home after ~2.5 s).
+- **Light / Dark / System theme** — picked in a Settings modal (gear button on Home), persisted.
+- **Internationalization (English / Spanish / Italian)** — defaults to the device language, persisted, switchable in Settings. Locale-aware dates.
+- **QR check-in** (class-scoped, mock `memberId` payload) via `expo-camera`, with a manual-search fallback when permission is denied.
+- **Animations:** spring "pop" on the success screen + native screen transitions (`moti` / `reanimated`).
+- **Date-scoped persistence:** check-ins saved per day in AsyncStorage (`checkins:<YYYY-MM-DD>`), with automatic purge of previous days so the kiosk boots clean.
+- **All states handled:** loading, empty, error (duplicate / unknown member / no camera), and success.
+- **Tested:** 22 unit + integration tests, TypeScript strict, headless web bundle verified.
 
-### 1. Visual Design
+## 🧭 The flow
 
-**Reference**: Use the provided Figma file as your style guide
-
-The Figma includes:
-- Typography examples
-- Button styles
-- Layout conventions
-- Overall aesthetic direction
-
-**Resources**:
-- [MAAT's Kiosk Concept File](https://www.figma.com/design/yZiTpnsOb9E8v0lUHRHNB9/MAAT-Kiosk-Concept?node-id=0-1&m=dev)
-- [Geist Font](https://github.com/vercel/geist-font/)
-
-**Your task**:
-- Recreate the initial screen faithfully
-- Extend the design language to additional screens
-- Maintain visual consistency across all UI elements
-
-**Note**: Pixel-perfection is not expected, but **design coherence** is required.
-
-### 2. Core User Flow
-
-Implement the following screens and functionality:
-
-#### **A. Home / Entry Screen**
-Based on the Figma style:
-- [ ] Display welcome state
-- [ ] Show today's classes
-- [ ] Provide navigation to class details
-
-#### **B. Class Screen**
-Internal overview of the selected class:
-- [ ] Display basic class information (name, time, instructor, etc.)
-- [ ] Show list of attendees with:
-  - Display name
-  - Profile picture
-  - Status (e.g., confirmed, registered)
-  - Registration time (optional)
-- [ ] Provide ability to add new check-ins
-
-#### **C. Member Search**
-- [ ] Implement search by name (simple client-side filter is sufficient)
-- [ ] Display scrollable list of members
-- [ ] Show "no results" state when search yields no matches
-
-#### **D. Member Check-In**
-After selecting a member:
-- [ ] Display member's name
-- [ ] Show today's date
-- [ ] Present clear call-to-action: **"Check In"** button
-- [ ] Handle check-in action
-
-#### **E. Success State**
-After successful check-in:
-- [ ] Show confirmation screen
-- [ ] Auto-reset to home screen after 2–3 seconds
-- [ ] Ensure kiosk returns to "ready" state
-
-### 3. Data Layer
-
-Choose the approach that best fits your strengths:
-
-#### **Option A: Local JSON** (Recommended for simplicity)
-
-Create a `members.json` file with structure:
-
-```json
-[
-  {
-    "id": "123",
-    "firstName": "Anna",
-    "lastName": "Rossi",
-    "profilePicture": "https://..."
-  },
-  {
-    "id": "124",
-    "firstName": "Marco",
-    "lastName": "Lopez",
-    "profilePicture": "https://..."
-  }
-]
+```
+Home ──tap a class──▶ Class ──"Find your name"──▶ Search ──pick member──▶ Check-In ──"Check In"──▶ Success ──(2.5s)──▶ Home
+                       Class ──"Scan" (QR, mock)──────────────────────────────────────────────────▶ Success
 ```
 
-**Implementation**:
-- Load JSON at app startup
-- Store check-ins in memory or local storage
-- Create similar JSON structure for classes/sessions
+## 🛠 Tech stack
 
-#### **Option B: Minimal API** (Optional, if you enjoy backend)
+| Area | Choice |
+|---|---|
+| Framework | Expo SDK 56, React Native, TypeScript (strict) |
+| Navigation | `expo-router` (file-based routes under `src/app`) |
+| State | React Context + `useReducer` (no extra state library) |
+| Persistence | `@react-native-async-storage/async-storage` (date-scoped keys) |
+| Fonts | Geist Sans + Geist Mono (`@expo-google-fonts`) |
+| UI | `@expo/vector-icons`, `moti` + `react-native-reanimated` |
+| Native | `expo-camera` (QR), `expo-localization` (default language) |
+| Testing | `jest-expo` + `@testing-library/react-native` |
 
-Expose basic endpoints:
-- `GET /members` - List all members
-- `GET /classes` - List today's classes
-- `POST /checkins` - Record a check-in
+## ✅ Prerequisites
 
-Any stack is acceptable (Firebase, Supabase, Nest, Go, Rails, etc.)
+- **Node 18+** and npm
+- One of:
+  - **Expo Go** on your phone (iOS App Store / Google Play) — easiest, and required for the camera/QR step
+  - **iOS Simulator** (Xcode, macOS only) or **Android Emulator** (Android Studio)
 
-### 4. Optional Enhancements
+## 🚀 Run it (step by step)
 
-This project intentionally leaves room for creativity. Consider adding:
+```bash
+# 1. Clone and install
+git clone https://github.com/Cedillin/test-app.git
+cd test-app
+npm install
 
-- Smooth animations or transitions
-- Kiosk lock mode (prevent access to device functions)
-- QR code-based check-in
-- Offline-first mode with sync
-- Any feature that demonstrates your product thinking
-
-**Remember**: Quality over quantity. A few well-executed features are better than many half-finished ones.
-
-## Technical Specifications
-
-### Platform Choice
-
-Choose any mobile technology:
-- **Cross-platform**: Flutter, React Native, Kotlin Multiplatform
-- **Native**: SwiftUI (iOS), Jetpack Compose (Android)
-
-### Architecture Recommendations
-
-Consider implementing:
-- Clear separation of concerns (UI, business logic, data)
-- State management appropriate to your chosen stack
-- Reusable components
-- Proper error handling
-
-## Design Guidelines
-
-### Key Principles
-
-1. **Kiosk-First UX**
-   - Large, tappable targets
-   - Clear visual hierarchy
-   - Minimal text input requirements
-   - Auto-reset flows
-
-2. **Consistency**
-   - Follow Figma's visual language
-   - Maintain consistent spacing
-   - Use the same color palette
-   - Keep typography hierarchy
-
-3. **States to Consider**
-   - Loading states
-   - Empty states (no classes, no members)
-   - Error states (failed check-in)
-   - Success states
-
-## Evaluation Criteria
-
-Your submission will be evaluated on:
-
-### 🎨 Design (25%)
-- Faithfulness to Figma's visual style
-- Coherent extension of UI patterns to new screens
-- Readable, friendly kiosk interface
-- Thoughtful UX decisions
-
-### 💻 Code Quality (25%)
-- Clear architecture and project structure
-- Separation of concerns
-- Thoughtful state management
-- Readable and well-organized code
-- Appropriate use of platform/framework patterns
-
-### 🎯 User Experience (25%)
-- Smooth, intuitive flows
-- Clear error and empty states
-- Attention to edge cases
-
-### 🧠 Ownership & Trade-offs (25%)
-- Clear reasoning for technical choices
-- Sensible scope management
-- Documentation of trade-offs and decisions
-- Awareness of what could be improved with more time
-
-### ⭐ Bonus Points
-- Smooth animations and transitions
-- Offline-first approach
-- Integration tests
-- Creative features that enhance the experience
-
-## Deliverables
-
-Please submit:
-
-1. **Repository Link**
-   - Public GitHub repo
-
-2. **Running Instructions**
-   - Clear setup steps
-   - Required dependencies
-   - How to run the app
-
-3. **README** (optional)
-   - Brief architecture overview
-   - Key design decisions
-   - Trade-offs you made
-   - What you would add/improve with more time
-   - Known limitations or bugs
-
-### README Template for Your Submission
-
-```markdown
-# Gym Kiosk - [Your Name]
-
-## Architecture
-
-[Brief overview of your architectural choices]
-
-## Tech Stack
-
-- Platform: [Flutter/React Native/etc.]
-- State Management: [Your choice]
-- Additional libraries: [List key dependencies]
-
-## Design Decisions
-
-[Key decisions you made and why]
-
-## Trade-offs
-
-[What you prioritized and what you deprioritized]
-
-## Future Improvements
-
-[What you would add with more time]
-
-## Running the App
-
-[Step-by-step instructions]
+# 2. Start the dev server (Metro)
+npx expo start
 ```
 
-## Questions?
+Then open the app:
 
-If you have questions about requirements or need clarification, please reach out. We want you to succeed!
+- **Phone (recommended):** scan the QR code in the terminal with **Expo Go**
+- **iOS Simulator:** press `i`
+- **Android Emulator:** press `a`
+- **Web preview:** press `w` (or `npm run web`)
 
-Good luck and have fun building! 🚀
+**Try the flow:** tap the **gear** (top-right) to switch theme & language → open a class → **Find your name** → type to filter (try `zzz` for the empty state) → pick a member → **Check In** → the Success screen pops and auto-returns Home. Do a check-in, reload the app, reopen the class — the member stays **Confirmed** (persistence). For QR, open a class → **Scan** (real device only; encode a member id such as `m1`).
 
----
+## 🔍 Quality checks
 
-# Gym Kiosk — Submission (David Cedillo)
+```bash
+npm test          # 22 unit + integration tests
+npm run typecheck # tsc --noEmit (strict)
+npm run lint      # expo lint
+npx expo export --platform ios   # headless production bundle (proof it builds)
+```
 
-## Architecture
-Expo + expo-router (file-based screens), TypeScript. A single `CheckInContext`
-(Context + useReducer) holds members/classes (bundled JSON, normalized to today)
-and the day's check-ins (AsyncStorage, date-scoped with stale-day purge). Pure
-logic (`lib/dates`, `lib/attendees`, `lib/storage`, `context/reducer`) is
-unit-tested; screens consume it.
+## 🏗 Architecture
 
-## Tech Stack
-- Platform: Expo (React Native), TypeScript
-- State: React Context + useReducer
-- Persistence: @react-native-async-storage/async-storage (keys `checkins:<date>`)
-- Fonts: Geist Sans + Geist Mono (@expo-google-fonts)
+The app keeps a clean separation between **pure logic**, **state**, and **screens**:
 
-## Design Decisions
-- Self-service member flow ("Find your name"), kiosk auto-reset after success.
-- Attendee count = unique members after merging roster + confirmed check-ins.
-- Avatars fall back to colored initials (no hard dependency on network images).
-- Design tokens read from the provided Home Figma screenshot (tentative).
+- **Data** (`src/data`): bundled `members.json` / `classes.json`. Classes carry no fixed calendar date — they're **normalized to "today"** (device clock) on load, so the kiosk always shows today's sessions.
+- **Pure logic** (`src/lib`): `dates` (locale-aware formatting, `todayIso`, time ranges), `attendees` (merge roster + check-ins into a **unique** attendee count), `storage` (date-scoped AsyncStorage with stale-day purge), `theme` (light/dark palettes + spacing/radius/font tokens), `types`. This layer is fully unit-tested.
+- **State** (`src/context`): a single `CheckInContext` (Context + `useReducer`) holds members, today's classes, and the day's check-ins. `ADD_CHECKIN` is idempotent; persistence runs in an effect on committed state (no stale-closure writes). Two small cross-cutting providers — `ThemeContext` (theme mode) and `I18nContext` (language + `t()`), both memoized.
+- **Screens** (`src/app`): thin `expo-router` screens that consume hooks (`useClasses`, `useMember`, `useCheckIns`, `useCheckInActions`, `useTheme`, `useI18n`). Colors are applied inline from the active palette; layout stays in static `StyleSheet`s.
+- **Components** (`src/components`): reusable, theme-aware primitives (`Avatar`, `TagPill`, `PrimaryButton`, `ClassCard`, `HeroCard`, `AttendeeRow`, `SearchBar`, `ScreenHeader`, `EmptyState`).
 
-## Trade-offs
-- Context over a state library (small app). QR / animations / integration tests
-  were scoped as bonus and deferred.
+### Project structure
 
-## Future Improvements
-- QR "bump" check-in (class-scoped), screen transitions/animations,
-  integration tests, native kiosk lock.
+```
+src/
+  app/            # expo-router routes (the 5 screens + /settings + /class/[id]/scan)
+  components/     # reusable UI
+  context/        # CheckInContext (+ reducer), ThemeContext, I18nContext
+  data/           # members.json, classes.json
+  lib/            # dates, attendees, storage, theme, types (pure, tested)
+  i18n/           # translations (en/es/it)
+  __tests__/      # integration tests + test-utils
+docs/             # interactive delivery guide (also deployed to Pages)
+```
 
-## Running the App
-1. `npm install`
-2. `npx expo start` (press `i`/`a`, or scan with Expo Go)
-3. Tests: `npm test`  ·  Types: `npm run typecheck`
+## 🧠 Design decisions
+
+- **Self-service actor.** The copy and flow are built around the member ("Find your name"), matching the Figma's "bump this device" concept. The attendee list is treated as a public class overview, not a private roster.
+- **Unique attendee count.** Count = unique members after merging the pre-registered roster with confirmed check-ins — a confirmed check-in overrides a registered entry, so nobody is double-counted.
+- **Photos with a graceful fallback.** Avatars use images and fall back to colored initials on error, so the kiosk never hard-depends on the network.
+- **Settings behind a gear, not on Home.** Theme + language live in a Settings modal so Home stays close to the Figma (which has no switchers), while still being one tap away.
+- **Responsive grid.** Two columns on tablet (the kiosk target, matching the Figma) and one column on the few places it matters; cards are equal-height with footers pinned to the bottom so the grid reads as even.
+- **Inverted primary button.** The CTA fills with the foreground color and uses the background color for its label, so it stays high-contrast in both light and dark themes.
+- **Date-scoped persistence.** Keying check-ins by day (and purging older days at startup) means a kiosk left running overnight never shows yesterday's attendance.
+
+## ⚖️ Trade-offs
+
+- **Context + `useReducer` over a state library.** The app is small; a single store keeps it dependency-light and easy to follow. A larger app would justify Zustand/Redux.
+- **Bundled JSON over a backend.** Zero infra, instant demo. A real deployment would swap the data layer behind the same hooks for an API.
+- **QR uses a mock payload.** There's no companion member app, so the QR carries only a `memberId`; the scan screen is class-scoped (the class comes from the route), which removes any ambiguity.
+- **Camera is device-only.** It can't be exercised in the iOS Simulator or on web, so those paths fall back to manual search.
+
+## 🔭 What I'd improve with more time
+
+- Apply the refreshed card/visual language consistently to the Class / Search / Check-In screens.
+- Native kiosk lock (guided access) — limited under Expo managed.
+- A real backend + multi-device sync, and a real QR/NFC "bump" with a member app.
+- More integration coverage (QR permission flows, theme/language persistence across restarts).
+- Memoize the pre-existing `CheckInContext` value to trim re-renders.
+
+## 📋 The interactive guide
+
+[`docs/maat-kiosk-workspace.html`](docs/maat-kiosk-workspace.html) (also [live](https://cedillin.github.io/test-app/guide.html)) is a single self-contained page documenting how this was built: the brainstorming → decisions, the execution plan, a Jira-style task board, five stakeholder "personas" reviewing the work, an **interactive HTML mockup** of the app (click-through, theme + language toggles), and the Figma reference.
+
+## 📝 Tests
+
+- **Unit** (`src/lib`, `src/context`): date/time formatting, attendee merge & unique count, date-scoped storage + purge, reducer idempotency.
+- **Integration** (`src/__tests__`): search filter + "no results" state, and the check-in → success navigation flow (with `expo-router` and `expo-localization` mocked for determinism).
