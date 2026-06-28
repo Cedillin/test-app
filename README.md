@@ -263,3 +263,39 @@ Please submit:
 If you have questions about requirements or need clarification, please reach out. We want you to succeed!
 
 Good luck and have fun building! 🚀
+
+---
+
+# Gym Kiosk — Submission (David Cedillo)
+
+## Architecture
+Expo + expo-router (file-based screens), TypeScript. A single `CheckInContext`
+(Context + useReducer) holds members/classes (bundled JSON, normalized to today)
+and the day's check-ins (AsyncStorage, date-scoped with stale-day purge). Pure
+logic (`lib/dates`, `lib/attendees`, `lib/storage`, `context/reducer`) is
+unit-tested; screens consume it.
+
+## Tech Stack
+- Platform: Expo (React Native), TypeScript
+- State: React Context + useReducer
+- Persistence: @react-native-async-storage/async-storage (keys `checkins:<date>`)
+- Fonts: Geist Sans + Geist Mono (@expo-google-fonts)
+
+## Design Decisions
+- Self-service member flow ("Find your name"), kiosk auto-reset after success.
+- Attendee count = unique members after merging roster + confirmed check-ins.
+- Avatars fall back to colored initials (no hard dependency on network images).
+- Design tokens read from the provided Home Figma screenshot (tentative).
+
+## Trade-offs
+- Context over a state library (small app). QR / animations / integration tests
+  were scoped as bonus and deferred.
+
+## Future Improvements
+- QR "bump" check-in (class-scoped), screen transitions/animations,
+  integration tests, native kiosk lock.
+
+## Running the App
+1. `npm install`
+2. `npx expo start` (press `i`/`a`, or scan with Expo Go)
+3. Tests: `npm test`  ·  Types: `npm run typecheck`
