@@ -41,7 +41,7 @@ export function ClassCard({ session, attendees }: { session: ClassSession; atten
 }
 
 const styles = StyleSheet.create({
-  card: { flex: 1, borderRadius: radius.card, padding: spacing.md, gap: spacing.sm },
+  card: { flex: 1, borderRadius: radius.card, padding: spacing.md, justifyContent: 'space-between', gap: spacing.sm },
   headRow: { flexDirection: 'row', gap: spacing.sm },
   headText: { flex: 1, gap: 3 },
   name: { fontFamily: fonts.sansBold, fontSize: 14, lineHeight: 18 },
