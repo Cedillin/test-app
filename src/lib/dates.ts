@@ -1,5 +1,13 @@
-const DAYS = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
-const MONTHS = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+const DAYS = {
+  en: ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'],
+  es: ['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'],
+  it: ['DOMENICA','LUNEDÌ','MARTEDÌ','MERCOLEDÌ','GIOVEDÌ','VENERDÌ','SABATO'],
+};
+const MONTHS = {
+  en: ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'],
+  es: ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'],
+  it: ['GENNAIO','FEBBRAIO','MARZO','APRILE','MAGGIO','GIUGNO','LUGLIO','AGOSTO','SETTEMBRE','OTTOBRE','NOVEMBRE','DICEMBRE'],
+};
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -13,8 +21,12 @@ function ordinal(n: number): string {
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
 
-export function formatHeaderDate(d: Date = new Date()): string {
-  return `${DAYS[d.getDay()]}, ${ordinal(d.getDate())} ${MONTHS[d.getMonth()]}`;
+export function formatHeaderDate(d: Date = new Date(), lang: 'es'|'en'|'it' = 'en'): string {
+  const day = DAYS[lang][d.getDay()];
+  const month = MONTHS[lang][d.getMonth()];
+  if (lang === 'en') return `${day}, ${ordinal(d.getDate())} ${month}`;
+  if (lang === 'es') return `${day}, ${d.getDate()} DE ${month}`;
+  return `${day}, ${d.getDate()} ${month}`; // it
 }
 
 export function formatTimeRange(start: string, end: string): string {
