@@ -9,9 +9,18 @@ import {
 import { GeistMono_400Regular } from '@expo-google-fonts/geist-mono';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { CheckInProvider } from '../context/CheckInContext';
-import { colors } from '../lib/theme';
+import { ThemeProvider, useTheme } from '../context/ThemeContext';
+import { I18nProvider } from '../context/I18nContext';
+import { lightColors } from '../lib/theme';
 
 SplashScreen.preventAutoHideAsync();
+
+function ThemedStack() {
+  const { colors } = useTheme();
+  return (
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} />
+  );
+}
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -27,13 +36,17 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <CheckInProvider>
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} />
-      </CheckInProvider>
+      <ThemeProvider>
+        <I18nProvider>
+          <CheckInProvider>
+            <ThemedStack />
+          </CheckInProvider>
+        </I18nProvider>
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: lightColors.background },
 });
