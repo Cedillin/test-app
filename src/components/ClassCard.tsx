@@ -11,7 +11,7 @@ export function ClassCard({ session, attendees }: { session: ClassSession; atten
   const { colors } = useTheme();
   return (
     <Link href={`/class/${session.id}`} asChild>
-      <Pressable style={[styles.card, { backgroundColor: colors.card }]}>
+      <Pressable style={StyleSheet.flatten([styles.card, { backgroundColor: colors.card }])}>
         <View style={styles.headRow}>
           <Avatar name={session.instructor} size={40} />
           <View style={styles.headText}>
