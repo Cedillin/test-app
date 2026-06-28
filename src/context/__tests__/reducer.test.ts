@@ -24,6 +24,14 @@ test('ADD_CHECKIN appends a confirmed check-in', () => {
   expect(next.checkins[0].memberId).toBe('m1');
 });
 
+test('ADD_CHECKIN is idempotent for the same class and member', () => {
+  const ci: CheckIn = { id: 'k1', classId: 'c1', memberId: 'm1', status: 'confirmed', checkedInAt: '2026-06-28T10:01:00.000Z' };
+  const once = reducer(hydrated, { type: 'ADD_CHECKIN', checkin: ci });
+  const dup: CheckIn = { id: 'k2', classId: 'c1', memberId: 'm1', status: 'confirmed', checkedInAt: '2026-06-28T10:02:00.000Z' };
+  const twice = reducer(once, { type: 'ADD_CHECKIN', checkin: dup });
+  expect(twice.checkins).toHaveLength(1);
+});
+
 test('RESET_DAY clears check-ins only', () => {
   const ci: CheckIn = { id: 'k1', classId: 'c1', memberId: 'm1', status: 'confirmed', checkedInAt: '2026-06-28T10:01:00.000Z' };
   const withOne = reducer(hydrated, { type: 'ADD_CHECKIN', checkin: ci });

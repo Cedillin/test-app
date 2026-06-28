@@ -34,8 +34,13 @@ export function reducer(state: State, action: Action): State {
         classes: action.classes,
         checkins: action.checkins,
       };
-    case 'ADD_CHECKIN':
+    case 'ADD_CHECKIN': {
+      const exists = state.checkins.some(
+        (c) => c.classId === action.checkin.classId && c.memberId === action.checkin.memberId,
+      );
+      if (exists) return state;
       return { ...state, checkins: [...state.checkins, action.checkin] };
+    }
     case 'RESET_DAY':
       return { ...state, checkins: [] };
     default:

@@ -4,7 +4,7 @@ import classesData from '../data/classes.json';
 import type { Member, ClassSession, CheckIn } from '../lib/types';
 import { reducer, initialState, type State } from './reducer';
 import { todayIso, normalizeToToday } from '../lib/dates';
-import { loadCheckIns, saveCheckIns, purgeBefore, clearDay } from '../lib/storage';
+import { loadCheckIns, saveCheckIns, purgeBefore } from '../lib/storage';
 import { isCheckedIn } from '../lib/attendees';
 
 type CheckInResult = { ok: boolean; reason?: 'duplicate' };
@@ -40,6 +40,10 @@ export function CheckInProvider({ children }: { children: React.ReactNode }) {
     })();
   }, []);
 
+  useEffect(() => {
+    if (state.hydrated) saveCheckIns(state.date, state.checkins).catch((e) => console.error('persist failed', e));
+  }, [state.hydrated, state.date, state.checkins]);
+
   const checkIn = (classId: string, memberId: string): CheckInResult => {
     const forClass = state.checkins.filter((c) => c.classId === classId);
     if (isCheckedIn(memberId, forClass)) return { ok: false, reason: 'duplicate' };
@@ -47,13 +51,11 @@ export function CheckInProvider({ children }: { children: React.ReactNode }) {
       id: newId(), classId, memberId, status: 'confirmed', checkedInAt: new Date().toISOString(),
     };
     dispatch({ type: 'ADD_CHECKIN', checkin });
-    saveCheckIns(state.date, [...state.checkins, checkin]);
     return { ok: true };
   };
 
   const resetToday = () => {
     dispatch({ type: 'RESET_DAY' });
-    clearDay(state.date);
   };
 
   return <Ctx.Provider value={{ state, checkIn, resetToday }}>{children}</Ctx.Provider>;
