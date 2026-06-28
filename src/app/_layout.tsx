@@ -18,7 +18,9 @@ SplashScreen.preventAutoHideAsync();
 function ThemedStack() {
   const { colors } = useTheme();
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} />
+    <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right', contentStyle: { backgroundColor: colors.background } }}>
+      <Stack.Screen name="success" options={{ animation: 'fade' }} />
+    </Stack>
   );
 }
 

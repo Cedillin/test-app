@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
+import { MotiView } from 'moti';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { spacing, fonts } from '../lib/theme';
@@ -21,7 +22,12 @@ export default function SuccessScreen() {
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.topBar }]}>
-      <View style={styles.body}>
+      <MotiView
+        from={{ opacity: 0, scale: 0.6 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: 'spring', damping: 12, stiffness: 180 }}
+        style={styles.body}
+      >
         <Text style={[styles.check, { color: colors.white }]}>✓</Text>
         <Text style={[styles.title, { color: colors.white }]}>
           {duplicate === '1' ? t('alreadyCheckedIn') : t('checkedIn')}
@@ -29,7 +35,7 @@ export default function SuccessScreen() {
         <Text style={[styles.sub, { color: colors.white }]}>
           {name ? t('seeYouNamed', { name }) : t('seeYou')}
         </Text>
-      </View>
+      </MotiView>
       <Text style={[styles.hint, { color: colors.white }]}>{t('returningToStart')}</Text>
     </SafeAreaView>
   );
