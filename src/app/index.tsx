@@ -1,6 +1,8 @@
-import { ScrollView, Text, View, StyleSheet } from 'react-native';
+import { ScrollView, Text, View, StyleSheet, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, spacing, radius, fonts } from '../lib/theme';
+import { spacing, radius, fonts } from '../lib/theme';
+import { useTheme } from '../context/ThemeContext';
+import { useI18n } from '../context/I18nContext';
 import { useClasses, useHydrated, useCheckIns } from '../context/CheckInContext';
 import { attendeeCount } from '../lib/attendees';
 import { formatHeaderDate } from '../lib/dates';
@@ -15,27 +17,42 @@ function CardWithCount({ session }: { session: ClassSession }) {
 }
 
 export default function Home() {
+  const { colors, resolved, setMode } = useTheme();
+  const { t, lang, setLang } = useI18n();
   const hydrated = useHydrated();
   const classes = useClasses();
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={styles.date}>{formatHeaderDate()}</Text>
-        <Text style={styles.welcome}>Welcome to Aranha</Text>
+        <Text style={[styles.date, { color: colors.muted }]}>{formatHeaderDate(new Date(), lang)}</Text>
+        <View style={styles.switchRow}>
+          <Pressable onPress={() => setMode(resolved === 'dark' ? 'light' : 'dark')} hitSlop={10}>
+            <Text style={[styles.switchIcon, { color: colors.text }]}>{resolved === 'dark' ? '☀️' : '🌙'}</Text>
+          </Pressable>
+          <View style={styles.langGroup}>
+            {(['es', 'en', 'it'] as const).map((l) => (
+              <Pressable key={l} onPress={() => setLang(l)} hitSlop={6}>
+                <Text style={[styles.lang, { color: l === lang ? colors.accent : colors.muted,
+                  fontFamily: l === lang ? fonts.sansBold : fonts.mono }]}>{l.toUpperCase()}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+        <Text style={[styles.welcome, { color: colors.text }]}>{t('welcome')} Aranha</Text>
 
         <HeroCard
-          label="EXPERIENCES"
-          title="Summer BJJ Bootcamp"
-          subtitle="Roll more, learn more, sweat more. Summer starts on the mat."
+          label={t('heroLabel')}
+          title={t('heroTitle')}
+          subtitle={t('heroSubtitle')}
           image="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=1200"
         />
 
-        <Text style={styles.section}>Today's classes</Text>
+        <Text style={[styles.section, { color: colors.text }]}>{t('todaysClasses')}</Text>
         {!hydrated ? (
-          <EmptyState title="Loading…" />
+          <EmptyState title={t('loading')} />
         ) : classes.length === 0 ? (
-          <EmptyState title="No classes today" subtitle="Check back later." />
+          <EmptyState title={t('noClasses')} subtitle={t('noClassesSub')} />
         ) : (
           <View style={styles.grid}>
             {classes.map((c) => (
@@ -44,10 +61,10 @@ export default function Home() {
           </View>
         )}
 
-        <View style={styles.tip}>
-          <Text style={styles.tipText}>
-            <Text style={styles.tipBold}>Pro tip. </Text>
-            Open your MAAT app and bump this device, you will be checked in automatically.
+        <View style={[styles.tip, { borderColor: colors.border }]}>
+          <Text style={[styles.tipText, { color: colors.muted }]}>
+            <Text style={[styles.tipBold, { color: colors.text }]}>{t('proTipBold')}</Text>
+            {t('proTip')}
           </Text>
         </View>
       </ScrollView>
@@ -56,14 +73,18 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
+  safe: { flex: 1 },
   scroll: { padding: spacing.lg, gap: spacing.md },
-  date: { fontFamily: fonts.mono, fontSize: 11, letterSpacing: 1, color: colors.muted },
-  welcome: { fontFamily: fonts.sansBlack, fontSize: 34, color: colors.text },
-  section: { fontFamily: fonts.sansBold, fontSize: 22, color: colors.text, marginTop: spacing.sm },
+  date: { fontFamily: fonts.mono, fontSize: 11, letterSpacing: 1 },
+  switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.sm },
+  switchIcon: { fontSize: 20 },
+  langGroup: { flexDirection: 'row', gap: spacing.sm },
+  lang: { fontSize: 13 },
+  welcome: { fontFamily: fonts.sansBlack, fontSize: 34 },
+  section: { fontFamily: fonts.sansBold, fontSize: 22, marginTop: spacing.sm },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
   cell: { width: '47%', flexGrow: 1 },
-  tip: { flexDirection: 'row', borderWidth: 1, borderColor: colors.border, borderRadius: radius.card, padding: spacing.md, marginTop: spacing.sm },
-  tipText: { fontFamily: fonts.sans, fontSize: 13, color: colors.muted, flex: 1 },
-  tipBold: { fontFamily: fonts.sansSemi, color: colors.text },
+  tip: { flexDirection: 'row', borderWidth: 1, borderRadius: radius.card, padding: spacing.md, marginTop: spacing.sm },
+  tipText: { fontFamily: fonts.sans, fontSize: 13, flex: 1 },
+  tipBold: { fontFamily: fonts.sansSemi },
 });

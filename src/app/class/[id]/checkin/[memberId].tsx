@@ -1,7 +1,9 @@
 import { Text, View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { colors, spacing, fonts } from '../../../../lib/theme';
+import { spacing, fonts } from '../../../../lib/theme';
+import { useTheme } from '../../../../context/ThemeContext';
+import { useI18n } from '../../../../context/I18nContext';
 import { useMember, useClass, useCheckInActions } from '../../../../context/CheckInContext';
 import { formatHeaderDate } from '../../../../lib/dates';
 import { PrimaryButton } from '../../../../components/PrimaryButton';
@@ -11,15 +13,17 @@ import { EmptyState } from '../../../../components/EmptyState';
 export default function CheckInScreen() {
   const { id, memberId } = useLocalSearchParams<{ id: string; memberId: string }>();
   const router = useRouter();
+  const { colors } = useTheme();
+  const { t, lang } = useI18n();
   const member = useMember(memberId);
   const session = useClass(id);
   const { checkIn } = useCheckInActions();
 
   if (!member || !session) {
     return (
-      <SafeAreaView style={styles.safe} edges={['top']}>
-        <ScreenHeader title="Check in" onBack={() => router.back()} />
-        <EmptyState title={!member ? 'Member not found' : 'Class not found'} />
+      <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
+        <ScreenHeader title={t('checkIn')} onBack={() => router.back()} />
+        <EmptyState title={!member ? t('memberNotFound') : t('classNotFound')} />
       </SafeAreaView>
     );
   }
@@ -34,23 +38,23 @@ export default function CheckInScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
       <ScreenHeader title={session.name} onBack={() => router.back()} />
       <View style={styles.body}>
-        <Text style={styles.date}>{formatHeaderDate()}</Text>
-        <Text style={styles.name}>{member.firstName} {member.lastName}</Text>
-        <Text style={styles.sub}>{session.name} · {session.startTime}</Text>
+        <Text style={[styles.date, { color: colors.muted }]}>{formatHeaderDate(new Date(), lang)}</Text>
+        <Text style={[styles.name, { color: colors.text }]}>{member.firstName} {member.lastName}</Text>
+        <Text style={[styles.sub, { color: colors.muted }]}>{session.name} · {session.startTime}</Text>
       </View>
-      <View style={styles.cta}><PrimaryButton label="Check In" onPress={onCheckIn} /></View>
+      <View style={styles.cta}><PrimaryButton label={t('checkIn')} onPress={onCheckIn} /></View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background, paddingHorizontal: spacing.lg },
+  safe: { flex: 1, paddingHorizontal: spacing.lg },
   body: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: spacing.sm },
-  date: { fontFamily: fonts.mono, fontSize: 12, letterSpacing: 1, color: colors.muted },
-  name: { fontFamily: fonts.sansBlack, fontSize: 34, color: colors.text, textAlign: 'center' },
-  sub: { fontFamily: fonts.sans, fontSize: 16, color: colors.muted },
+  date: { fontFamily: fonts.mono, fontSize: 12, letterSpacing: 1 },
+  name: { fontFamily: fonts.sansBlack, fontSize: 34, textAlign: 'center' },
+  sub: { fontFamily: fonts.sans, fontSize: 16 },
   cta: { paddingVertical: spacing.lg },
 });

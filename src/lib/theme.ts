@@ -16,8 +16,6 @@ export const darkColors: Palette = {
   tagDefault: { bg: '#262626', fg: '#A3A3A3' },
 };
 
-// Compat shim — keeps screens/components from Tasks 3–4 typechecking until converted.
-export const colors = lightColors;
 
 const TAGS: Record<string, { bg: string; fg: string }> = {
   KIDS: { bg: '#FCE7F3', fg: '#DB2777' },
