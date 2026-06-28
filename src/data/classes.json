@@ -1,0 +1,12 @@
+[
+  { "id": "c1", "name": "BJJ /Grappling", "startTime": "10:00", "endTime": "11:00", "instructor": "Lautaro S.", "tags": ["KIDS","YOGA","MMA","BJJ"], "capacity": 30,
+    "roster": [
+      { "memberId": "m1", "status": "registered", "registeredAt": "2026-06-28T09:00:00.000Z" },
+      { "memberId": "m2", "status": "registered", "registeredAt": "2026-06-28T09:05:00.000Z" }
+    ] },
+  { "id": "c2", "name": "Yoga Flow", "startTime": "12:00", "endTime": "13:00", "instructor": "Sofia B.", "tags": ["YOGA"], "capacity": 20,
+    "roster": [ { "memberId": "m4", "status": "registered", "registeredAt": "2026-06-28T08:30:00.000Z" } ] },
+  { "id": "c3", "name": "MMA Conditioning", "startTime": "18:00", "endTime": "19:00", "instructor": "Diego F.", "tags": ["MMA"], "capacity": 25, "roster": [] },
+  { "id": "c4", "name": "Kids Grappling", "startTime": "17:00", "endTime": "17:45", "instructor": "Luca G.", "tags": ["KIDS","BJJ"], "capacity": 15,
+    "roster": [ { "memberId": "m6", "status": "registered", "registeredAt": "2026-06-28T07:00:00.000Z" } ] }
+]

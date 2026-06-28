@@ -1,0 +1,10 @@
+[
+  { "id": "m1", "firstName": "Anna", "lastName": "Rossi", "profilePicture": "https://i.pravatar.cc/150?img=1" },
+  { "id": "m2", "firstName": "Marco", "lastName": "Lopez", "profilePicture": "https://i.pravatar.cc/150?img=2" },
+  { "id": "m3", "firstName": "Lautaro", "lastName": "Sosa", "profilePicture": "https://i.pravatar.cc/150?img=3" },
+  { "id": "m4", "firstName": "Sofia", "lastName": "Bianchi" },
+  { "id": "m5", "firstName": "Diego", "lastName": "Fernandez", "profilePicture": "https://i.pravatar.cc/150?img=5" },
+  { "id": "m6", "firstName": "Valentina", "lastName": "Moretti" },
+  { "id": "m7", "firstName": "Luca", "lastName": "Greco", "profilePicture": "https://i.pravatar.cc/150?img=7" },
+  { "id": "m8", "firstName": "Giulia", "lastName": "Conti", "profilePicture": "https://i.pravatar.cc/150?img=8" }
+]
