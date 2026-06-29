@@ -275,17 +275,17 @@ const TASKS = [
   {key:'KIOSK-4',  t:'AsyncStorage date-scoped + purge', type:'feature', tests:'4/4',  who:'senior', commits:['004f023'], col:'done', d:'Keys checkins:<YYYY-MM-DD>; purge of prior days. TDD.'},
   {key:'KIOSK-5',  t:'CheckInContext (provider+reducer+hooks)', type:'feature', tests:'17/17', who:'senior', commits:['2dd3ac2','0696c68'], col:'done', d:'Context+useReducer. FIX in review: ADD_CHECKIN idempotent + persistence via effect (no stale-closure).'},
   {key:'KIOSK-6',  t:'UI primitives', type:'feature', tests:'tsc', who:'junior', commits:['ec6b870'], col:'done', d:'Avatar (initials fallback), TagPill, PrimaryButton, ScreenHeader, EmptyState, SearchBar.'},
-  {key:'KIOSK-7',  t:'Root layout: fuentes + portrait + provider', type:'feature', tests:'tsc', who:'senior', commits:['efd3788'], col:'done', d:'Geist via expo-font, SplashScreen, SafeAreaProvider + CheckInProvider + Stack.'},
+  {key:'KIOSK-7',  t:'Root layout: fonts + portrait + provider', type:'feature', tests:'tsc', who:'senior', commits:['efd3788'], col:'done', d:'Geist via expo-font, SplashScreen, SafeAreaProvider + CheckInProvider + Stack.'},
   {key:'KIOSK-8',  t:'Home screen', type:'feature', tests:'tsc', who:'junior', commits:['a8fff7b'], col:'done', d:'Date (mono), Welcome to Aranha, hero, 2-col grid with per-class count, informational Pro tip.'},
   {key:'KIOSK-9',  t:'Class screen + AttendeeRow', type:'feature', tests:'tsc', who:'junior', commits:['ff74112'], col:'done', d:'Info + tags + X/capacity + attendee list (merged, sorted) + "Find your name" button.'},
   {key:'KIOSK-10', t:'Member Search', type:'feature', tests:'tsc', who:'junior', commits:['58e1881'], col:'done', d:'Case-insensitive client-side filter, FlatList, "No results" state.'},
-  {key:'KIOSK-11', t:'Check-In screen (duplicados)', type:'feature', tests:'tsc', who:'senior', commits:['e318de9'], col:'done', d:'Name + date + "Check In" CTA; duplicate → success with flag.'},
+  {key:'KIOSK-11', t:'Check-In screen (duplicates)', type:'feature', tests:'tsc', who:'senior', commits:['e318de9'], col:'done', d:'Name + date + "Check In" CTA; duplicate → success with flag.'},
   {key:'KIOSK-12', t:'Success + auto-reset', type:'feature', tests:'tsc', who:'senior', commits:['ec2dbe3'], col:'done', d:'Confirmation + setTimeout 2.5s → router.replace("/"), cancelled on unmount.'},
   {key:'KIOSK-13', t:'Submission README', type:'docs', tests:'—', who:'pm', commits:['c894a17'], col:'done', d:'Architecture, stack, decisions, trade-offs, how to run. Appended to the original brief.'},
   {key:'KIOSK-14', t:'Cleanup: success tokens + dead css', type:'chore', tests:'17/17', who:'senior', commits:['468df73'], col:'done', d:'Tokens colors.success/successBg, correct not-found copy, removed dead global.css. Bundle validated (expo export).'},
   {key:'KIOSK-15', t:'QR "bump" check-in (class-scoped, mock)', type:'bonus', tests:'—', who:'senior', commits:[], col:'backlog', d:'Phase 2. expo-camera at /class/[id]/scan; QR carries memberId. Requires babel.config + worklets plugin.'},
-  {key:'KIOSK-16', t:'Animaciones / transiciones', type:'bonus', tests:'—', who:'junior', commits:[], col:'backlog', d:'Phase 2. reanimated + moti: screen transitions and success "pop".'},
-  {key:'KIOSK-17', t:'Tests de integración del flujo', type:'bonus', tests:'—', who:'qa', commits:[], col:'backlog', d:'Phase 2. @testing-library/react-native: search→check-in→success→reset, no-results, duplicate.'},
+  {key:'KIOSK-16', t:'Animations / transitions', type:'bonus', tests:'—', who:'junior', commits:[], col:'backlog', d:'Phase 2. reanimated + moti: screen transitions and success "pop".'},
+  {key:'KIOSK-17', t:'Flow integration tests', type:'bonus', tests:'—', who:'qa', commits:[], col:'backlog', d:'Phase 2. @testing-library/react-native: search→check-in→success→reset, no-results, duplicate.'},
 ];
 
 const COLUMNS = [['backlog','Backlog'],['inprogress','In Progress'],['review','In Review'],['done','Done']];
