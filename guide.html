@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MAAT Kiosk — Delivery Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;900&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --card:#f4f4f5; --text:#0a0a0a; --muted:#737373; --topbar:#1a1a1a;
+    --accent:#2563eb; --border:#e5e5e5; --green:#16a34a; --greenbg:#dcfce7;
+    --amber:#ea580c; --amberbg:#ffedd5; --pink:#db2777; --pinkbg:#fce7f3;
+    --radius:16px; --mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;
+    --sans:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .topbar{background:var(--topbar);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50}
+  .logo{width:26px;height:26px;border-radius:50%;background:conic-gradient(from 220deg,#ea580c,#1a1a1a 60%);display:inline-block;flex:0 0 auto}
+  .topbar h1{font-size:16px;margin:0;font-weight:700;letter-spacing:-.2px}
+  .topbar .sub{font-family:var(--mono);font-size:11px;color:#a3a3a3;letter-spacing:1px;text-transform:uppercase}
+  .tabs{display:flex;gap:4px;padding:0 16px;border-bottom:1px solid var(--border);background:#fff;position:sticky;top:54px;z-index:40;overflow-x:auto}
+  .tab{appearance:none;border:0;background:none;font-family:var(--sans);font-size:14px;font-weight:600;color:var(--muted);padding:14px 16px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+  .tab:hover{color:var(--text)}
+  .tab.active{color:var(--text);border-bottom-color:var(--accent)}
+  main{max-width:1180px;margin:0 auto;padding:28px 24px 80px}
+  .view{display:none;animation:fade .25s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  h2.section{font-size:24px;font-weight:800;letter-spacing:-.4px;margin:0 0 4px}
+  p.lead{color:var(--muted);margin:0 0 22px;font-size:15px;max-width:70ch}
+  .label{font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+
+  /* decision / brainstorming cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
+  .dcard{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+  .dcard h3{margin:.2em 0 .3em;font-size:16px}
+  .dcard .q{color:var(--muted);font-size:13px;margin:0 0 8px}
+  .pill{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.5px;padding:3px 9px;border-radius:999px;background:var(--card);color:#525252}
+  .pill.kids{background:var(--pinkbg);color:var(--pink)} .pill.yoga{background:#dbeafe;color:var(--accent)}
+  .pill.mma{background:var(--amberbg);color:var(--amber)} .pill.bjj{background:var(--greenbg);color:var(--green)}
+  .chosen{font-weight:600}
+  .reactions{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+  .rx{font-family:var(--mono);font-size:10px;display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:999px;border:1px solid var(--border);cursor:help}
+  .rx.ok{background:var(--greenbg);color:var(--green);border-color:transparent}
+  .rx.warn{background:var(--amberbg);color:var(--amber);border-color:transparent}
+  .rx.q{background:#dbeafe;color:var(--accent);border-color:transparent}
+
+  /* plan */
+  .phase{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px;overflow:hidden}
+  .phase>summary{cursor:pointer;list-style:none;padding:14px 18px;font-weight:700;display:flex;align-items:center;justify-content:space-between;background:#fafafa}
+  .phase>summary::-webkit-details-marker{display:none}
+  .phase[open]>summary{border-bottom:1px solid var(--border)}
+  .phase .body{padding:6px 18px 14px}
+  .task-row{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed var(--border)}
+  .task-row:last-child{border-bottom:0}
+  .task-row .key{font-family:var(--mono);font-size:11px;color:var(--accent);min-width:74px}
+  .task-row .tt{font-weight:600;font-size:14px}
+  .task-row .meta{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .badge{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:6px;background:var(--greenbg);color:var(--green);white-space:nowrap}
+  .badge.bonus{background:#ede9fe;color:#7c3aed}
+
+  /* board */
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start}
+  .column{background:#f7f7f8;border:1px solid var(--border);border-radius:var(--radius);min-height:120px;display:flex;flex-direction:column}
+  .column h4{margin:0;padding:12px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+  .column h4 .cnt{font-family:var(--mono);font-size:11px;color:var(--muted);background:#fff;border:1px solid var(--border);border-radius:999px;padding:1px 8px}
+  .dropzone{padding:10px;display:flex;flex-direction:column;gap:10px;flex:1;min-height:60px}
+  .dropzone.over{background:#eef2ff;border-radius:0 0 var(--radius) var(--radius)}
+  .ticket{background:#fff;border:1px solid var(--border);border-radius:10px;padding:11px 12px;cursor:grab;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .ticket:active{cursor:grabbing}
+  .ticket.dragging{opacity:.45}
+  .ticket .tk-type{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+  .ticket .dot{width:14px;height:14px;border-radius:4px;display:inline-block}
+  .ticket .ttl{font-size:13.5px;font-weight:600;line-height:1.3}
+  .ticket .tk-foot{display:flex;justify-content:space-between;align-items:center;margin-top:9px}
+  .ticket .key{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+  .ava{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;font-family:var(--mono)}
+  .board-tools{display:flex;gap:10px;align-items:center;margin:0 0 16px}
+  .btn{appearance:none;border:1px solid var(--border);background:#fff;border-radius:8px;padding:7px 12px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer}
+  .btn:hover{background:var(--card)}
+
+  /* personas */
+  .persona-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  .ptab{display:flex;gap:10px;align-items:center;border:1px solid var(--border);background:#fff;border-radius:12px;padding:10px 14px;cursor:pointer;transition:.15s}
+  .ptab:hover{border-color:#bdbdbd}
+  .ptab.active{border-color:var(--accent);box-shadow:0 0 0 3px #2563eb22}
+  .ptab .pava{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px}
+  .ptab .pn{font-weight:700;font-size:14px;line-height:1.1}
+  .ptab .pr{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .ppanel{border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+  .ppanel header{display:flex;gap:14px;align-items:center;margin-bottom:6px}
+  .ppanel header .pava{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:19px}
+  .verdict{font-family:var(--mono);font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px}
+  .verdict.approve{background:var(--greenbg);color:var(--green)}
+  .verdict.concerns{background:var(--amberbg);color:var(--amber)}
+  .quote{font-style:italic;color:#404040;border-left:3px solid var(--accent);padding:6px 0 6px 14px;margin:14px 0}
+  .ppanel h4{margin:18px 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+  .think li{margin:5px 0;font-size:14px}
+  .mods{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+  .mod{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;transition:.12s}
+  .mod:hover{background:#fafafa}
+  .mod.accepted{background:var(--greenbg);border-color:#bbf7d0}
+  .mod input{margin-top:3px;width:16px;height:16px;accent-color:var(--green)}
+  .mod .mtxt{font-size:13.5px;line-height:1.4}
+  .mod .mtag{font-family:var(--mono);font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);display:block;margin-top:3px}
+  .progress{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:14px}
+  .progress b{color:var(--green)}
+
+  /* modal */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .overlay.show{display:flex}
+  .modal{background:#fff;border-radius:var(--radius);max-width:560px;width:100%;max-height:85vh;overflow:auto;padding:24px}
+  .modal .close{float:right;border:0;background:none;font-size:22px;cursor:pointer;color:var(--muted)}
+  .modal h3{margin:0 0 2px}
+  .kv{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;margin-top:14px;font-size:13.5px}
+  .kv dt{color:var(--muted);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  .kv dd{margin:0}
+  code{font-family:var(--mono);font-size:12px;background:var(--card);padding:1px 5px;border-radius:5px}
+  .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:40px;font-family:var(--mono)}
+  @media(max-width:820px){.board{grid-template-columns:1fr 1fr}.kv{grid-template-columns:1fr}}
+
+  /* ---- app mockup ---- */
+  .mockwrap{display:flex;gap:30px;flex-wrap:wrap;align-items:flex-start}
+  .device{width:300px;height:620px;border-radius:36px;background:#111;padding:12px;box-shadow:0 22px 55px rgba(0,0,0,.28);flex:0 0 auto}
+  .device .notch{height:16px;display:flex;justify-content:center;align-items:flex-start}
+  .device .notch::after{content:'';width:90px;height:6px;border-radius:999px;background:#333;margin-top:2px}
+  .screen{width:100%;height:calc(100% - 16px);border-radius:26px;overflow:hidden;position:relative;font-family:var(--sans)}
+  .scr{position:absolute;inset:0;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:11px}
+  .mk-mono{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase}
+  .mk-h1{font-weight:900;font-size:23px;line-height:1.05}
+  .mk-row{display:flex;align-items:center;justify-content:space-between}
+  .mk-seg{display:flex;gap:7px;align-items:center}
+  .mk-seg button{appearance:none;border:0;background:none;font-family:var(--mono);font-size:11px;cursor:pointer;padding:1px}
+  .mk-card{border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:5px;cursor:pointer}
+  .mk-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mk-pill{font-family:var(--mono);font-size:8px;letter-spacing:.5px;padding:2px 7px;border-radius:999px;align-self:flex-start}
+  .mk-btn{border:0;border-radius:13px;padding:13px;font-weight:600;font-size:15px;cursor:pointer;text-align:center}
+  .mk-btn2{border-radius:13px;padding:11px;font-weight:600;font-size:14px;cursor:pointer;text-align:center}
+  .mk-ava{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex:0 0 auto}
+  .mk-input{border-radius:13px;padding:12px;font-size:15px;border:0;outline:none;width:100%}
+  .mk-arow{display:flex;align-items:center;gap:10px;padding:7px 0}
+  .mk-badge{font-family:var(--mono);font-size:8px;padding:2px 7px;border-radius:999px;margin-left:auto}
+  .mk-back{font-size:14px;cursor:pointer;background:none;border:0;padding:0;align-self:flex-start}
+  .mk-success{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .mk-pop{animation:pop .55s cubic-bezier(.2,1.5,.4,1)}
+  @keyframes pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+  .mk-caption{max-width:340px;color:var(--muted);font-size:13.5px;line-height:1.55}
+  .mk-caption ul{padding-left:18px;margin:8px 0}
+  .mk-caption li{margin:5px 0}
+  .figframe{width:100%;height:72vh;border:1px solid var(--border);border-radius:var(--radius);background:var(--card)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <span class="logo"></span>
+  <div>
+    <h1>MAAT Kiosk — Delivery Workspace</h1>
+    <span class="sub">Aranha · Gym Check-in Kiosk · Core shipped</span>
+  </div>
+</div>
+
+<nav class="tabs" id="tabs">
+  <button class="tab active" data-view="brainstorm">🧠 Brainstorming</button>
+  <button class="tab" data-view="plan">🗺️ Execution Plan</button>
+  <button class="tab" data-view="board">📋 Jira Board</button>
+  <button class="tab" data-view="people">👥 Personas</button>
+  <button class="tab" data-view="mockup">📱 App Mockup</button>
+  <button class="tab" data-view="figma">🎨 Figma</button>
+</nav>
+
+<main>
+  <!-- BRAINSTORM -->
+  <section class="view active" id="brainstorm">
+    <h2 class="section">Brainstorming → Decisions</h2>
+    <p class="lead">Each decision came from a concrete question raised during brainstorming. The colored chips are reactions from the 5 personas (hover to see the comment). Full detail in <code>docs/superpowers/specs/2026-06-28-gym-kiosk-design.md</code>.</p>
+    <div class="grid" id="decisions"></div>
+  </section>
+
+  <!-- PLAN -->
+  <section class="view" id="plan">
+    <h2 class="section">Execution Plan</h2>
+    <p class="lead">13 Core tasks (delivered, logic covered by TDD) + 3 bonus deferred to Phase 2. Expand each phase. Source: <code>docs/superpowers/plans/2026-06-28-gym-kiosk.md</code>.</p>
+    <div id="phases"></div>
+  </section>
+
+  <!-- BOARD -->
+  <section class="view" id="board">
+    <h2 class="section">Jira Board</h2>
+    <p class="lead">Drag cards between columns (saved in your browser). Click a card to see real commits and tests from this session.</p>
+    <div class="board-tools">
+      <button class="btn" id="resetBoard">↺ Reset board</button>
+      <span class="label" id="boardStat"></span>
+    </div>
+    <div class="board" id="boardEl"></div>
+  </section>
+
+  <!-- PEOPLE -->
+  <section class="view" id="people">
+    <h2 class="section">Validation Committee — 5 Personas</h2>
+    <p class="lead">Each persona reviews the project's design decisions and proposes changes. Check the ones you accept (saved in your browser).</p>
+    <div class="persona-bar" id="personaBar"></div>
+    <div id="personaPanel"></div>
+  </section>
+
+  <!-- MOCKUP -->
+  <section class="view" id="mockup">
+    <h2 class="section">App mockup — flujo interactivo</h2>
+    <p class="lead">HTML reproduction of the React Native app (same Geist tokens, dark/light, es/en/it). Full click-through: tap a class → "Find your name" / Scan → check-in → success (auto-reset). This is a mockup, not the real app.</p>
+    <div class="mockwrap">
+      <div class="device"><div class="notch"></div><div class="screen" id="mockScreen"></div></div>
+      <div class="mk-caption">
+        <p><strong>What to try:</strong></p>
+        <ul>
+          <li>☀️/🌙 and <b>ES/EN/IT</b> at the top of Home (toggles theme and language live).</li>
+          <li>Tap a class → <code>Find your name</code> → type (try <code>zzz</code> for the "no results" state) → pick a member → <code>Check In</code>.</li>
+          <li><code>Scan</code> simulates the QR (tap a "QR &lt;name&gt;" button).</li>
+          <li>The Success screen "pops" and auto-returns to Home after ~2.5 s.</li>
+          <li>Re-enter the class: the member now shows as <b>Confirmed</b> and the count increases (unique, no duplicates).</li>
+        </ul>
+        <p style="margin-top:14px">Mirrors the real app (<code>src/app/*</code>). Screens, unique attendee count, i18n, and auto-reset behave identically. Real tests: <code>npm test</code> → 22/22.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FIGMA -->
+  <section class="view" id="figma">
+    <h2 class="section">Figma — MAAT Kiosk Concept</h2>
+    <p class="lead">Original design reference (Home screen). The embed requires the file to be publicly shared or that you are logged into Figma; if it does not load, use the direct link.</p>
+    <p><a href="https://www.figma.com/design/yZiTpnsOb9E8v0lUHRHNB9/MAAT-Kiosk-Concept?node-id=0-1&m=dev" target="_blank" rel="noopener">↗ Open in Figma (dev mode)</a></p>
+    <iframe id="figFrame" class="figframe" data-src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fdesign%2FyZiTpnsOb9E8v0lUHRHNB9%2FMAAT-Kiosk-Concept%3Fnode-id%3D0-1" allowfullscreen loading="lazy" title="Figma MAAT Kiosk Concept"></iframe>
+  </section>
+</main>
+
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+<p class="foot">Generated from the Claude Code session · MAAT Kiosk · all state lives in localStorage</p>
+
+<script>
+/* ---------- DATA (real session data) ---------- */
+const PEOPLE = {
+  pm:    {name:'Paula M.',  role:'Product Manager', color:'#2563eb', short:'PM'},
+  ceo:   {name:'Carlos E.', role:'CEO',             color:'#0a0a0a', short:'CEO'},
+  senior:{name:'Sara R.',   role:'Senior Dev',      color:'#16a34a', short:'SR'},
+  junior:{name:'Jon D.',    role:'Junior Dev',      color:'#ea580c', short:'JR'},
+  qa:    {name:'Quim A.',   role:'QA',              color:'#db2777', short:'QA'},
+};
+
+const DECISIONS = [
+  {q:'What stack for the kiosk?', t:'Expo (React Native) + expo-router + TS',
+   why:'Fast iteration, runs on iPad/Android, Geist easy to use, fits a web-leaning profile. 2-day time-box.',
+   rx:{pm:['ok','Reaches iPad and Android from a single codebase'],ceo:['ok','Optimal time-to-market'],senior:['ok','expo-router = clean file-based navigation'],junior:['ok','Familiar with good tooling'],qa:['ok','Testable with jest-expo']}},
+  {q:'Data layer?', t:'JSON local + AsyncStorage (date-scoped)',
+   why:'members.json/classes.json bundled; check-ins persisted per day with old-day purge.',
+   rx:{pm:['ok','No backend = instant demo'],ceo:['ok','Zero infrastructure cost'],senior:['ok','Day purge prevents stale state'],junior:['q','What if it grows? — fine for the challenge'],qa:['warn','Need to test the purge across day boundaries']}},
+  {q:'Who is the actor?', t:'Self-service (member searches their name)',
+   why:'The Figma shows "bump this device" → the member interacts alone. Copy: "Find your name".',
+   rx:{pm:['ok','Matches the Figma vision'],ceo:['ok','Less front-desk staff needed'],senior:['ok','Simplifies the model'],junior:['ok','Clear flow'],qa:['warn','Attendee list is public: review privacy']}},
+  {q:'How to approach the design?', t:'Tokens extracted from the Figma screenshot',
+   why:'Geist Sans/Mono, white #FFF, card #F4F4F5, accent #2563EB, pastel pills. Provisional.',
+   rx:{pm:['ok','Visual coherence covered'],ceo:['ok','Premium look for the pitch'],senior:['ok','theme.ts centralizes tokens'],junior:['ok','Easy to reuse'],qa:['warn','Still need to validate against Figma dev mode on iPad']}},
+  {q:'What extras within the time-box?', t:'Animations + tests; functional QR (mock)',
+   why:'Moved to Phase 2 (bonus). The 5-screen Core always goes first.',
+   rx:{pm:['ok','Prioritizes the required flow'],ceo:['warn','QR is the wow-factor: get it in soon'],senior:['ok','Bonus gets cut first if time runs short'],junior:['q','Does reanimated need extra config?'],qa:['ok','Tests for the critical flow = good sign']}},
+  {q:'QR scope?', t:'Functional (mock), class-scoped /class/[id]/scan',
+   why:'classId comes from the route → the QR carries only the memberId. The Home Pro tip remains informational.',
+   rx:{pm:['ok','Resolves class ambiguity'],ceo:['ok','Shows product thinking, not just CRUD'],senior:['ok','class-scoped avoids classId ambiguity'],junior:['ok','I understand where the class comes from'],qa:['warn','Test camera permission and invalid QR']}},
+];
+
+const TASKS = [
+  {key:'KIOSK-1',  t:'Scaffold Expo + theme + types + jest', type:'chore',   tests:'2/2',  who:'senior', commits:['bc23f24','0ce8f9b'], col:'done', d:'create-expo-app (src/app + alias @/), color tokens, shared types, jest runner. Decision: everything under src/.'},
+  {key:'KIOSK-2',  t:'Data fixtures + date utils', type:'feature', tests:'4/4',  who:'junior', commits:['317183b'], col:'done', d:'members.json/classes.json + todayIso/formatHeaderDate/formatTimeRange/normalizeToToday. TDD.'},
+  {key:'KIOSK-3',  t:'Attendee merge + unique count', type:'feature', tests:'3/3',  who:'senior', commits:['814eb89'], col:'done', d:'mergeAttendees: confirmed overrides registered; unique count (3, not 4). TDD for the double-count bug.'},
+  {key:'KIOSK-4',  t:'AsyncStorage date-scoped + purge', type:'feature', tests:'4/4',  who:'senior', commits:['004f023'], col:'done', d:'Keys checkins:<YYYY-MM-DD>; purge of prior days. TDD.'},
+  {key:'KIOSK-5',  t:'CheckInContext (provider+reducer+hooks)', type:'feature', tests:'17/17', who:'senior', commits:['2dd3ac2','0696c68'], col:'done', d:'Context+useReducer. FIX in review: ADD_CHECKIN idempotent + persistence via effect (no stale-closure).'},
+  {key:'KIOSK-6',  t:'UI primitives', type:'feature', tests:'tsc', who:'junior', commits:['ec6b870'], col:'done', d:'Avatar (initials fallback), TagPill, PrimaryButton, ScreenHeader, EmptyState, SearchBar.'},
+  {key:'KIOSK-7',  t:'Root layout: fonts + portrait + provider', type:'feature', tests:'tsc', who:'senior', commits:['efd3788'], col:'done', d:'Geist via expo-font, SplashScreen, SafeAreaProvider + CheckInProvider + Stack.'},
+  {key:'KIOSK-8',  t:'Home screen', type:'feature', tests:'tsc', who:'junior', commits:['a8fff7b'], col:'done', d:'Date (mono), Welcome to Aranha, hero, 2-col grid with per-class count, informational Pro tip.'},
+  {key:'KIOSK-9',  t:'Class screen + AttendeeRow', type:'feature', tests:'tsc', who:'junior', commits:['ff74112'], col:'done', d:'Info + tags + X/capacity + attendee list (merged, sorted) + "Find your name" button.'},
+  {key:'KIOSK-10', t:'Member Search', type:'feature', tests:'tsc', who:'junior', commits:['58e1881'], col:'done', d:'Case-insensitive client-side filter, FlatList, "No results" state.'},
+  {key:'KIOSK-11', t:'Check-In screen (duplicates)', type:'feature', tests:'tsc', who:'senior', commits:['e318de9'], col:'done', d:'Name + date + "Check In" CTA; duplicate → success with flag.'},
+  {key:'KIOSK-12', t:'Success + auto-reset', type:'feature', tests:'tsc', who:'senior', commits:['ec2dbe3'], col:'done', d:'Confirmation + setTimeout 2.5s → router.replace("/"), cancelled on unmount.'},
+  {key:'KIOSK-13', t:'Submission README', type:'docs', tests:'—', who:'pm', commits:['c894a17'], col:'done', d:'Architecture, stack, decisions, trade-offs, how to run. Appended to the original brief.'},
+  {key:'KIOSK-14', t:'Cleanup: success tokens + dead css', type:'chore', tests:'17/17', who:'senior', commits:['468df73'], col:'done', d:'Tokens colors.success/successBg, correct not-found copy, removed dead global.css. Bundle validated (expo export).'},
+  {key:'KIOSK-15', t:'QR "bump" check-in (class-scoped, mock)', type:'bonus', tests:'—', who:'senior', commits:[], col:'backlog', d:'Phase 2. expo-camera at /class/[id]/scan; QR carries memberId. Requires babel.config + worklets plugin.'},
+  {key:'KIOSK-16', t:'Animations / transitions', type:'bonus', tests:'—', who:'junior', commits:[], col:'backlog', d:'Phase 2. reanimated + moti: screen transitions and success "pop".'},
+  {key:'KIOSK-17', t:'Flow integration tests', type:'bonus', tests:'—', who:'qa', commits:[], col:'backlog', d:'Phase 2. @testing-library/react-native: search→check-in→success→reset, no-results, duplicate.'},
+];
+
+const COLUMNS = [['backlog','Backlog'],['inprogress','In Progress'],['review','In Review'],['done','Done']];
+
+const TYPE_COLOR = {feature:'#2563eb', chore:'#737373', docs:'#16a34a', test:'#db2777', bonus:'#7c3aed'};
+
+const PERSONA_CONTENT = {
+  pm:{verdict:'approve', quote:'The 5-screen self-service flow covers the brief and keeps scope under control within 2 days. Approved.',
+    think:['The "Find your name" flow fits the Figma\'s "bump this device" concept.','Loading/empty/error/success states accounted for.','Scope discipline: bonus kept separate from Core.'],
+    mods:[
+      {id:'pm1', tag:'Product', txt:'Visual "class full" warning on Class screen (currently allows exceeding capacity).'},
+      {id:'pm2', tag:'Analytics', txt:'Log check-in events for a future attendance dashboard.'},
+      {id:'pm3', tag:'UX', txt:'Class status badge (upcoming / in progress / ended) on Home.'},
+    ]},
+  ceo:{verdict:'approve', quote:'Solid and cheap to operate. But for the interview, the QR "bump" is the differentiator — prioritize it.',
+    think:['2-day time-box respected, zero infrastructure cost.','The QR/bump is the pitch\'s wow-factor.','The Aranha brand sells: polish the screenshots.'],
+    mods:[
+      {id:'ceo1', tag:'Strategy', txt:'Move the QR (Phase 2) up before the demo: it\'s what the Figma shows.'},
+      {id:'ceo2', tag:'Brand', txt:'Polish Aranha branding (logo, red accent) for the submission screenshots.'},
+      {id:'ceo3', tag:'Narrative', txt:'Tell the offline-first story (the kiosk should work without wifi).'},
+    ]},
+  senior:{verdict:'approve', quote:'Merge-ready: clean layers, tested pure logic, idempotent reducer, and persistence via effect. Zero Critical/Important issues.',
+    think:['Pure logic isolated and tested; thin screens.','The stale-closure fix is solid (idempotent reducer).','Counts are consistent between Home and Class by design.'],
+    mods:[
+      {id:'sr1', tag:'Build', txt:'Add babel.config.js with react-native-worklets/plugin before importing reanimated (Phase 2).'},
+      {id:'sr2', tag:'Latent Bug', txt:'Re-derive "today" on foreground resume (a 24h+ kiosk would write to yesterday\'s key).'},
+      {id:'sr3', tag:'Quality', txt:'Replace spacing literals (gap 4/2) with spacing.* tokens.'},
+      {id:'sr4', tag:'Tests', txt:'Integration test for the critical flow when Phase 2 testing arrives.'},
+    ]},
+  junior:{verdict:'approve', quote:'Reads well once you understand the src/ layout. Good for learning the Context+reducer pattern.',
+    think:['Small, focused components.','Clean relative imports with everything under src/.','TDD in the logic layer leaves examples to follow.'],
+    mods:[
+      {id:'jr1', tag:'DX', txt:'Use the @/ alias instead of ../../../ for more readable imports.'},
+      {id:'jr2', tag:'Docs', txt:'Short JSDoc on lib functions (mergeAttendees, todayIso) for the next developer.'},
+      {id:'jr3', tag:'Onboarding', txt:'"First run" note (deps + expo start) in the README.'},
+    ]},
+  qa:{verdict:'concerns', quote:'Approved with a test backlog. The logic is covered, but UI and accessibility cases are missing.',
+    think:['Duplicate blocked, "no results" and empty states present.','Old-day purge tested.','Bundle validated with expo export (exit 0).'],
+    mods:[
+      {id:'qa1', tag:'Tests', txt:'Cases: double-tap on Check In, class full, invalid/unknown QR, auto-reset cancellation.'},
+      {id:'qa2', tag:'A11y', txt:'accessibilityLabel on SearchBar and tappable cards.'},
+      {id:'qa3', tag:'Manual', txt:'Manual pass on a real iPad (portrait) against the Figma for visual fidelity.'},
+    ]},
+};
+
+/* ---------- RENDER ---------- */
+const $ = s=>document.querySelector(s);
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+
+// tabs
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); $('#'+b.dataset.view).classList.add('active');
+});
+
+// decisions + reactions
+const rxIco={ok:'✓',warn:'⚠',q:'?'};
+$('#decisions').append(...DECISIONS.map(d=>{
+  const c=el('div','dcard');
+  c.append(el('p','q','<span class="label">Question</span><br>'+d.q));
+  c.append(el('h3',null,d.t));
+  c.append(el('p',null,'<span style="color:var(--muted);font-size:13px">'+d.why+'</span>'));
+  const r=el('div','reactions');
+  Object.entries(d.rx).forEach(([k,[s,note]])=>{
+    const chip=el('span','rx '+s, rxIco[s]+' '+PEOPLE[k].short);
+    chip.title=PEOPLE[k].name+' ('+PEOPLE[k].role+'): '+note;
+    r.append(chip);
+  });
+  c.append(r); return c;
+}));
+
+// plan phases
+const phases=[
+  {name:'Core — locked (delivered)', open:true, keys:['KIOSK-1','KIOSK-2','KIOSK-3','KIOSK-4','KIOSK-5','KIOSK-6','KIOSK-7','KIOSK-8','KIOSK-9','KIOSK-10','KIOSK-11','KIOSK-12','KIOSK-13','KIOSK-14']},
+  {name:'Bonus — Phase 2 (deferred)', open:false, keys:['KIOSK-15','KIOSK-16','KIOSK-17']},
+];
+const byKey=k=>TASKS.find(t=>t.key===k);
+$('#phases').append(...phases.map(ph=>{
+  const det=el('details','phase'); if(ph.open)det.open=true;
+  const done=ph.keys.filter(k=>byKey(k).col==='done').length;
+  det.append(el('summary',null,ph.name+' <span class="label">'+done+'/'+ph.keys.length+' done</span>'));
+  const body=el('div','body');
+  ph.keys.forEach(k=>{const t=byKey(k);
+    const row=el('div','task-row');
+    row.append(el('span','key',t.key));
+    const mid=el('div'); mid.style.flex='1';
+    mid.append(el('div','tt',t.t));
+    mid.append(el('div','meta',t.d));
+    row.append(mid);
+    row.append(el('span','badge'+(t.type==='bonus'?' bonus':''), t.type==='bonus'?'BONUS':(t.tests==='—'?'done':t.tests)));
+    body.append(row);
+  });
+  det.append(body); return det;
+}));
+
+/* ---------- BOARD (drag & drop + localStorage) ---------- */
+const BKEY='maat_board_v1';
+function loadBoard(){try{return JSON.parse(localStorage.getItem(BKEY))||{}}catch(e){return {}}}
+function saveBoard(m){localStorage.setItem(BKEY,JSON.stringify(m))}
+function ticketCol(k){const m=loadBoard();return m[k]||byKey(k).col;}
+function renderBoard(){
+  const root=$('#boardEl'); root.innerHTML='';
+  COLUMNS.forEach(([id,label])=>{
+    const col=el('div','column');
+    const items=TASKS.filter(t=>ticketCol(t.key)===id);
+    col.append(el('h4',null,label+' <span class="cnt">'+items.length+'</span>'));
+    const dz=el('div','dropzone'); dz.dataset.col=id;
+    items.forEach(t=>dz.append(ticketEl(t)));
+    dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over');});
+    dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+    dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');
+      const key=e.dataTransfer.getData('text/plain'); const m=loadBoard(); m[key]=id; saveBoard(m); renderBoard();});
+    col.append(dz); root.append(col);
+  });
+  const total=TASKS.length, done=TASKS.filter(t=>ticketCol(t.key)==='done').length;
+  $('#boardStat').textContent=done+' / '+total+' in Done';
+}
+function ticketEl(t){
+  const tk=el('div','ticket'); tk.draggable=true; tk.dataset.key=t.key;
+  const type=el('div','tk-type','<span class="dot" style="background:'+(TYPE_COLOR[t.type]||'#999')+'"></span><span class="label">'+t.type+'</span>');
+  tk.append(type);
+  tk.append(el('div','ttl',t.t));
+  const foot=el('div','tk-foot');
+  foot.append(el('span','key',t.key+(t.tests&&t.tests!=='—'?' · '+t.tests:'')));
+  const p=PEOPLE[t.who]; const a=el('span','ava',p.short); a.style.background=p.color; a.title=p.name+' · '+p.role;
+  foot.append(a); tk.append(foot);
+  tk.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',t.key);tk.classList.add('dragging');});
+  tk.addEventListener('dragend',()=>tk.classList.remove('dragging'));
+  tk.addEventListener('click',()=>openTicket(t));
+  return tk;
+}
+function openTicket(t){
+  const p=PEOPLE[t.who];
+  const commits=t.commits.length?t.commits.map(c=>'<code>'+c+'</code>').join(' '):'<span style="color:var(--muted)">— pending (Phase 2)</span>';
+  $('#modal').innerHTML='<button class="close" onclick="closeModal()">×</button>'+
+    '<span class="label">'+t.key+'</span><h3>'+t.t+'</h3>'+
+    '<p style="color:var(--muted);font-size:14px;margin:.5em 0">'+t.d+'</p>'+
+    '<dl class="kv">'+
+    '<dt>Type</dt><dd>'+t.type+'</dd>'+
+    '<dt>Status</dt><dd>'+ (COLUMNS.find(c=>c[0]===ticketCol(t.key))[1]) +'</dd>'+
+    '<dt>Tests</dt><dd>'+t.tests+'</dd>'+
+    '<dt>Owner</dt><dd>'+p.name+' · '+p.role+'</dd>'+
+    '<dt>Commits</dt><dd>'+commits+'</dd>'+
+    '</dl>';
+  $('#overlay').classList.add('show');
+}
+function closeModal(){$('#overlay').classList.remove('show');}
+$('#overlay').addEventListener('click',e=>{if(e.target.id==='overlay')closeModal();});
+$('#resetBoard').onclick=()=>{localStorage.removeItem(BKEY);renderBoard();};
+renderBoard();
+
+/* ---------- PERSONAS ---------- */
+const MKEY='maat_mods_v1';
+function loadMods(){try{return JSON.parse(localStorage.getItem(MKEY))||{}}catch(e){return {}}}
+function saveMods(m){localStorage.setItem(MKEY,JSON.stringify(m))}
+let activePersona='pm';
+function renderPersonaBar(){
+  const bar=$('#personaBar'); bar.innerHTML='';
+  Object.entries(PEOPLE).forEach(([k,p])=>{
+    const t=el('div','ptab'+(k===activePersona?' active':''));
+    const av=el('div','pava',p.short); av.style.background=p.color;
+    t.append(av);
+    t.append(el('div',null,'<div class="pn">'+p.name+'</div><div class="pr">'+p.role+'</div>'));
+    t.onclick=()=>{activePersona=k;renderPersonaBar();renderPersonaPanel();};
+    bar.append(t);
+  });
+}
+function renderPersonaPanel(){
+  const k=activePersona, p=PEOPLE[k], c=PERSONA_CONTENT[k], accepted=loadMods();
+  const panel=$('#personaPanel'); panel.innerHTML='';
+  const box=el('div','ppanel');
+  const head=el('header');
+  const av=el('div','pava',p.short); av.style.background=p.color; head.append(av);
+  head.append(el('div',null,'<div style="font-weight:800;font-size:18px">'+p.name+'</div><div class="pr" style="font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase">'+p.role+'</div>'));
+  const v=el('span','verdict '+c.verdict, c.verdict==='approve'?'✓ Approved':'⚠ Approved with concerns');
+  v.style.marginLeft='auto'; head.append(v);
+  box.append(head);
+  box.append(el('p','quote','“'+c.quote+'”'));
+  box.append(el('h4',null,'Validation notes'));
+  const ul=el('ul','think'); c.think.forEach(x=>ul.append(el('li',null,x))); box.append(ul);
+  box.append(el('h4',null,'Proposed changes'));
+  const mods=el('ul','mods');
+  c.mods.forEach(m=>{
+    const li=el('li','mod'+(accepted[m.id]?' accepted':''));
+    const cb=el('input'); cb.type='checkbox'; cb.checked=!!accepted[m.id];
+    const txt=el('div','mtxt', m.txt+'<span class="mtag">'+m.tag+'</span>');
+    li.append(cb,txt);
+    li.onclick=e=>{if(e.target!==cb)cb.checked=!cb.checked; const a=loadMods(); if(cb.checked)a[m.id]=1;else delete a[m.id]; saveMods(a); renderPersonaPanel(); updateGlobalProgress();};
+    mods.append(li);
+  });
+  box.append(mods);
+  const mine=c.mods.filter(m=>accepted[m.id]).length;
+  box.append(el('div','progress','Accepted from '+p.name+': <b>'+mine+'</b> / '+c.mods.length));
+  panel.append(box);
+}
+function updateGlobalProgress(){/* hook for future totals */}
+renderPersonaBar(); renderPersonaPanel();
+
+/* ---------- APP MOCKUP (mirrors the RN app) ---------- */
+const MK_LIGHT={bg:'#FFFFFF',card:'#F4F4F5',text:'#0A0A0A',muted:'#737373',accent:'#2563EB',border:'#E5E5E5',success:'#16A34A',successBg:'#DCFCE7',topbar:'#1A1A1A'};
+const MK_DARK ={bg:'#0A0A0A',card:'#1A1A1A',text:'#FAFAFA',muted:'#A3A3A3',accent:'#3B82F6',border:'#262626',success:'#22C55E',successBg:'#14532D',topbar:'#000000'};
+const MK_TAGS={KIDS:{bg:'#FCE7F3',fg:'#DB2777'},YOGA:{bg:'#DBEAFE',fg:'#2563EB'},MMA:{bg:'#FFEDD5',fg:'#EA580C'},BJJ:{bg:'#DCFCE7',fg:'#16A34A'}};
+const MK_T={
+ en:{welcome:'Welcome to',today:'Today’s classes',attendees:'attendees',find:'Find your name',scan:'Scan',checkin:'Check In',checked:'Checked in!',already:'Already checked in',see:'See you on the mat',no:'No results',search:'Search your name…',back:'Back',confirmed:'Confirmed',registered:'Registered',protip:'Pro tip.',protipx:'Open your MAAT app and bump this device.',scanp:'Tap a member’s QR to simulate a scan'},
+ es:{welcome:'Bienvenido a',today:'Clases de hoy',attendees:'asistentes',find:'Busca tu nombre',scan:'Escanear',checkin:'Hacer check-in',checked:'¡Check-in hecho!',already:'Ya tienes el check-in',see:'Nos vemos en el tatami',no:'Sin resultados',search:'Busca tu nombre…',back:'Atrás',confirmed:'Confirmado',registered:'Registrado',protip:'Truco.',protipx:'Abre tu app MAAT y acerca este dispositivo.',scanp:'Toca el QR de un socio para simular el escaneo'},
+ it:{welcome:'Benvenuto a',today:'Lezioni di oggi',attendees:'partecipanti',find:'Trova il tuo nome',scan:'Scansiona',checkin:'Fai check-in',checked:'Check-in fatto!',already:'Check-in già effettuato',see:'Ci vediamo sul tatami',no:'Nessun risultato',search:'Cerca il tuo nome…',back:'Indietro',confirmed:'Confermato',registered:'Registrato',protip:'Consiglio.',protipx:'Apri la tua app MAAT e avvicina il dispositivo.',scanp:'Tocca il QR di un socio per simulare la scansione'},
+};
+const MK_DAYS={en:['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'],es:['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'],it:['DOMENICA','LUNEDÌ','MARTEDÌ','MERCOLEDÌ','GIOVEDÌ','VENERDÌ','SABATO']};
+const MK_MON={en:['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'],es:['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'],it:['GENNAIO','FEBBRAIO','MARZO','APRILE','MAGGIO','GIUGNO','LUGLIO','AGOSTO','SETTEMBRE','OTTOBRE','NOVEMBRE','DICEMBRE']};
+const MK_MEMBERS=[{id:'m1',f:'Anna',l:'Rossi'},{id:'m2',f:'Marco',l:'Lopez'},{id:'m3',f:'Lautaro',l:'Sosa'},{id:'m4',f:'Sofia',l:'Bianchi'},{id:'m5',f:'Diego',l:'Fernandez'},{id:'m6',f:'Valentina',l:'Moretti'},{id:'m7',f:'Luca',l:'Greco'},{id:'m8',f:'Giulia',l:'Conti'}];
+const MK_CLASSES=[
+ {id:'c1',name:'BJJ /Grappling',s:'10:00',e:'11:00',inst:'Lautaro S.',tags:['KIDS','YOGA','MMA','BJJ'],cap:30,roster:['m1','m2']},
+ {id:'c2',name:'Yoga Flow',s:'12:00',e:'13:00',inst:'Sofia B.',tags:['YOGA'],cap:20,roster:['m4']},
+ {id:'c3',name:'MMA Conditioning',s:'18:00',e:'19:00',inst:'Diego F.',tags:['MMA'],cap:25,roster:[]},
+ {id:'c4',name:'Kids Grappling',s:'17:00',e:'17:45',inst:'Luca G.',tags:['KIDS','BJJ'],cap:15,roster:['m6']}];
+const MK={screen:'home',cls:null,mem:null,dup:false,theme:'light',lang:'en',ci:{},_q:''};
+const MK_PAL=['#2563EB','#DB2777','#EA580C','#16A34A','#7C3AED','#0891B2'];
+const mkC=()=>MK.theme==='dark'?MK_DARK:MK_LIGHT;
+const mkTr=()=>MK_T[MK.lang];
+const mkMem=id=>MK_MEMBERS.find(x=>x.id===id);
+const mkName=id=>{const m=mkMem(id);return m?m.f+' '+m.l:id;};
+const mkIni=id=>{const m=mkMem(id);return m?(m.f[0]+m.l[0]):'?';};
+const mkAvaColor=id=>{let h=0;const s=mkName(id);for(let i=0;i<s.length;i++)h=(h+s.charCodeAt(i))%MK_PAL.length;return MK_PAL[h];};
+function mkOrd(n){const s=['TH','ST','ND','RD'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+function mkDate(){const d=new Date(),day=MK_DAYS[MK.lang][d.getDay()],mon=MK_MON[MK.lang][d.getMonth()],n=d.getDate();return MK.lang==='en'?`${day}, ${mkOrd(n)} ${mon}`:MK.lang==='es'?`${day}, ${n} DE ${mon}`:`${day}, ${n} ${mon}`;}
+function mkSet(c){const set=new Set(c.roster);(MK.ci[c.id]||[]).forEach(m=>set.add(m));return set;}
+function mkCount(c){return mkSet(c).size;}
+function mkAtt(c){return [...mkSet(c)].map(id=>({id,status:(MK.ci[c.id]||[]).includes(id)?'confirmed':'registered'}));}
+
+window.mkGo=s=>{MK.screen=s;MK._q='';mkRender();};
+window.mkClass=id=>{MK.cls=id;MK.screen='class';mkRender();};
+window.mkPick=id=>{MK.mem=id;MK.screen='checkin';mkRender();};
+window.mkToggleTheme=()=>{MK.theme=MK.theme==='dark'?'light':'dark';mkRender();};
+window.mkLang=l=>{MK.lang=l;mkRender();};
+window.mkSearch=v=>{MK._q=v;mkRender();const i=document.querySelector('#mockScreen .mk-input');if(i){i.focus();i.setSelectionRange(v.length,v.length);}};
+window.mkDo=id=>{const cid=MK.cls,list=MK.ci[cid]||[];if(list.includes(id)){MK.dup=true;}else{MK.ci[cid]=[...list,id];MK.dup=false;}MK.mem=id;MK.screen='success';mkRender();};
+
+function mkRender(){
+  const c=mkC(),t=mkTr(),el=document.getElementById('mockScreen');if(!el)return;
+  el.style.background=c.bg;el.style.color=c.text;
+  const tagHTML=cl=>cl.tags.map(tg=>`<span class="mk-pill" style="background:${MK_TAGS[tg].bg};color:${MK_TAGS[tg].fg}">${tg}</span>`).join('');
+  let h='';
+  if(MK.screen==='home'){
+    h=`<div class="scr">
+      <div class="mk-row">
+        <span class="mk-mono" style="color:${c.muted}">${mkDate()}</span>
+        <div class="mk-seg">
+          <button onclick="mkToggleTheme()" style="font-size:15px">${MK.theme==='dark'?'☀️':'🌙'}</button>
+          ${['es','en','it'].map(l=>`<button onclick="mkLang('${l}')" style="color:${l===MK.lang?c.accent:c.muted};font-weight:${l===MK.lang?700:400}">${l.toUpperCase()}</button>`).join('')}
+        </div>
+      </div>
+      <div class="mk-h1">${t.welcome} 🕷 Aranha</div>
+      <div class="mk-card" style="color:#fff;height:118px;justify-content:flex-end;background-image:linear-gradient(120deg,#9a3412,#1a1a1a)">
+        <span class="mk-mono" style="opacity:.85">EXPERIENCES</span>
+        <strong style="font-size:18px">Summer BJJ Bootcamp</strong>
+      </div>
+      <strong style="font-size:18px">${t.today}</strong>
+      <div class="mk-grid">${MK_CLASSES.map(cl=>`<div class="mk-card" style="background:${c.card}" onclick="mkClass('${cl.id}')">
+        <div class="mk-ava" style="background:${mkAvaColor(cl.inst)};width:30px;height:30px;font-size:11px">${cl.inst.split(' ').map(x=>x[0]).join('')}</div>
+        <strong style="font-size:13px">${cl.name}</strong>
+        <span style="color:${c.muted};font-size:12px">${cl.s}—${cl.e}h</span>
+        <div style="display:flex;gap:3px;flex-wrap:wrap">${tagHTML(cl)}</div>
+        <span style="color:${c.muted};font-size:11px">${mkCount(cl)}/${cl.cap} ${t.attendees}</span>
+      </div>`).join('')}</div>
+      <div class="mk-card" style="border:1px solid ${c.border};flex-direction:row;gap:8px;cursor:default">
+        <span>▦</span><span style="font-size:11px;color:${c.muted}"><b style="color:${c.text}">${t.protip}</b> ${t.protipx}</span>
+      </div>
+    </div>`;
+  } else if(MK.screen==='class'){
+    const cl=MK_CLASSES.find(x=>x.id===MK.cls);
+    h=`<div class="scr">
+      <button class="mk-back" style="color:${c.accent}" onclick="mkGo('home')">‹ ${t.back}</button>
+      <strong style="font-size:22px">${cl.name}</strong>
+      <span style="color:${c.muted};font-size:14px">${cl.s}—${cl.e}h · ${cl.inst}</span>
+      <div style="display:flex;gap:3px;flex-wrap:wrap">${tagHTML(cl)}</div>
+      <span style="font-size:13px">${mkCount(cl)}/${cl.cap} ${t.attendees}</span>
+      <div>${mkAtt(cl).map(a=>`<div class="mk-arow">
+        <div class="mk-ava" style="background:${mkAvaColor(a.id)}">${mkIni(a.id)}</div>
+        <span style="font-size:14px">${mkName(a.id)}</span>
+        <span class="mk-badge" style="background:${a.status==='confirmed'?c.successBg:c.card};color:${a.status==='confirmed'?c.success:c.muted}">${a.status==='confirmed'?t.confirmed:t.registered}</span>
+      </div>`).join('')}</div>
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
+        <button class="mk-btn2" style="border:1px solid ${c.border};color:${c.text};background:transparent" onclick="mkGo('scan')">▦ ${t.scan}</button>
+        <button class="mk-btn" style="background:${c.text};color:${c.bg}" onclick="mkGo('search')">${t.find}</button>
+      </div>
+    </div>`;
+  } else if(MK.screen==='search'){
+    const q=MK._q.toLowerCase(),res=MK_MEMBERS.filter(m=>(m.f+' '+m.l).toLowerCase().includes(q));
+    h=`<div class="scr">
+      <button class="mk-back" style="color:${c.accent}" onclick="mkGo('class')">‹ ${t.back}</button>
+      <input class="mk-input" style="background:${c.card};color:${c.text}" placeholder="${t.search}" value="${MK._q.replace(/"/g,'&quot;')}" oninput="mkSearch(this.value)">
+      <div>${res.length?res.map(m=>`<div class="mk-arow" style="cursor:pointer" onclick="mkPick('${m.id}')">
+        <div class="mk-ava" style="background:${mkAvaColor(m.id)}">${m.f[0]}${m.l[0]}</div>
+        <span style="font-size:15px">${m.f} ${m.l}</span></div>`).join(''):`<div style="text-align:center;padding:34px;color:${c.muted}"><strong style="font-size:16px">${t.no}</strong></div>`}</div>
+    </div>`;
+  } else if(MK.screen==='checkin'){
+    h=`<div class="scr">
+      <button class="mk-back" style="color:${c.accent}" onclick="mkGo('search')">‹ ${t.back}</button>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center">
+        <span class="mk-mono" style="color:${c.muted}">${mkDate()}</span>
+        <strong style="font-size:28px">${mkName(MK.mem)}</strong>
+      </div>
+      <button class="mk-btn" style="background:${c.text};color:${c.bg}" onclick="mkDo('${MK.mem}')">${t.checkin}</button>
+    </div>`;
+  } else if(MK.screen==='scan'){
+    h=`<div class="scr">
+      <button class="mk-back" style="color:${c.accent}" onclick="mkGo('class')">‹ ${t.back}</button>
+      <div style="flex:1;background:#000;border-radius:16px;display:flex;align-items:center;justify-content:center;min-height:240px">
+        <div style="width:60%;aspect-ratio:1;border:3px solid rgba(255,255,255,.6);border-radius:16px"></div>
+      </div>
+      <span style="text-align:center;color:${c.muted};font-size:12px">${t.scanp}</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">${MK_MEMBERS.slice(0,4).map(m=>`<button class="mk-btn2" style="border:1px solid ${c.border};color:${c.text};background:transparent;padding:7px 11px;font-size:12px" onclick="mkDo('${m.id}')">▦ ${m.f}</button>`).join('')}</div>
+    </div>`;
+  } else if(MK.screen==='success'){
+    h=`<div class="mk-success" style="background:${c.topbar};color:#fff">
+      <div class="mk-pop" style="display:flex;flex-direction:column;align-items:center;gap:8px">
+        <div style="font-size:58px">✓</div>
+        <strong style="font-size:26px">${MK.dup?t.already:t.checked}</strong>
+        <span style="opacity:.8">${t.see}, ${mkName(MK.mem).split(' ')[0]}.</span>
+      </div>
+    </div>`;
+  }
+  el.innerHTML=h;
+  if(MK.screen==='success'){clearTimeout(MK._timer);MK._timer=setTimeout(()=>{MK.screen='home';mkRender();},2500);}
+}
+mkRender();
+
+/* lazy-load the Figma embed only when its tab is opened */
+const figBtn=document.querySelector('.tab[data-view="figma"]');
+if(figBtn)figBtn.addEventListener('click',()=>{const f=document.getElementById('figFrame');if(f&&!f.src)f.src=f.dataset.src;});
+</script>
+</body>
+</html>
