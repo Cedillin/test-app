@@ -41,7 +41,8 @@
           "cameraPermission": "Allow MAAT Kiosk to scan member QR codes."
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      "expo-image"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Image, Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { useTheme } from '../context/ThemeContext';
 import { fonts } from '../lib/theme';
 
@@ -19,7 +20,7 @@ export function Avatar({ uri, name, size = 44 }: { uri?: string; name: string; s
   const [failed, setFailed] = useState(false);
   const dim = { width: size, height: size, borderRadius: size / 2 };
   if (uri && !failed) {
-    return <Image source={{ uri }} style={[dim, { backgroundColor: colors.card }]} onError={() => setFailed(true)} />;
+    return <Image source={{ uri }} style={[dim, { backgroundColor: colors.card }]} contentFit="cover" cachePolicy="memory-disk" transition={150} onError={() => setFailed(true)} />;
   }
   return (
     <View style={[styles.fallback, dim, { backgroundColor: colorFor(name) }]}>

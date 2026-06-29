@@ -22,6 +22,7 @@ The design follows the provided [Figma concept](https://www.figma.com/design/yZi
 - **QR check-in** (class-scoped, mock `memberId` payload) via `expo-camera`, with a manual-search fallback when permission is denied.
 - **Animations:** spring "pop" on the success screen + native screen transitions (`moti` / `reanimated`).
 - **Date-scoped persistence:** check-ins saved per day in AsyncStorage (`checkins:<YYYY-MM-DD>`), with automatic purge of previous days so the kiosk boots clean.
+- **Offline-first:** bundled data, on-device persistence, disk-cached images (`expo-image`) and bundled fonts mean the kiosk runs fully offline; an indicator surfaces when it loses connectivity (`expo-network`).
 - **All states handled:** loading, empty, error (duplicate / unknown member / no camera), and success.
 - **Tested:** 22 unit + integration tests, TypeScript strict, headless web bundle verified.
 
@@ -115,6 +116,7 @@ docs/             # interactive delivery guide (also deployed to Pages)
 - **Responsive grid.** Two columns on tablet (the kiosk target, matching the Figma) and one column on the few places it matters; cards are equal-height with footers pinned to the bottom so the grid reads as even.
 - **Inverted primary button.** The CTA fills with the foreground color and uses the background color for its label, so it stays high-contrast in both light and dark themes.
 - **Date-scoped persistence.** Keying check-ins by day (and purging older days at startup) means a kiosk left running overnight never shows yesterday's attendance.
+- **Offline-first.** A gym's wifi can drop, so nothing critical depends on the network: data is bundled, check-ins write to local storage immediately, images are disk-cached after first load, and fonts are bundled. A connectivity indicator tells the operator when it's offline — check-ins still save locally.
 
 ## ⚖️ Trade-offs
 

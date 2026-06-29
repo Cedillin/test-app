@@ -19,6 +19,7 @@ export const translations = {
     themeLight: 'Light', themeDark: 'Dark', themeSystem: 'System',
     storeLabel: 'STORE', storeTitle: 'Aranha x MAAT Store',
     storeSubtitle: 'New drop. Gear up — rashguards, gis and more.',
+    offline: 'Offline', offlineHint: 'Check-ins are saved on this device.',
   },
   es: {
     welcome: 'Bienvenido a', todaysClasses: 'Clases de hoy', attendees: 'asistentes',
@@ -40,6 +41,7 @@ export const translations = {
     themeLight: 'Claro', themeDark: 'Oscuro', themeSystem: 'Sistema',
     storeLabel: 'TIENDA', storeTitle: 'Aranha x MAAT Store',
     storeSubtitle: 'Nueva colección. Equípate: rashguards, kimonos y más.',
+    offline: 'Sin conexión', offlineHint: 'Los check-ins se guardan en este dispositivo.',
   },
   it: {
     welcome: 'Benvenuto a', todaysClasses: 'Lezioni di oggi', attendees: 'partecipanti',
@@ -61,6 +63,7 @@ export const translations = {
     themeLight: 'Chiaro', themeDark: 'Scuro', themeSystem: 'Sistema',
     storeLabel: 'STORE', storeTitle: 'Aranha x MAAT Store',
     storeSubtitle: 'Nuova collezione. Attrezzati: rashguard, gi e altro.',
+    offline: 'Offline', offlineHint: 'I check-in vengono salvati su questo dispositivo.',
   },
 } as const;
 

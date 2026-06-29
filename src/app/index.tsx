@@ -6,6 +6,7 @@ import { spacing, radius, fonts } from '../lib/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useI18n } from '../context/I18nContext';
 import { useClasses, useHydrated, useCheckIns } from '../context/CheckInContext';
+import { useOnline } from '../lib/useOnline';
 import { attendeeCount } from '../lib/attendees';
 import { formatHeaderDate } from '../lib/dates';
 import { ClassCard } from '../components/ClassCard';
@@ -24,10 +25,18 @@ export default function Home() {
   const router = useRouter();
   const hydrated = useHydrated();
   const classes = useClasses();
+  const online = useOnline();
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scroll}>
+        {!online && (
+          <View style={[styles.offline, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <View style={styles.offlineDot} />
+            <Text style={[styles.offlineText, { color: colors.text }]}>{t('offline')}</Text>
+            <Text style={[styles.offlineHint, { color: colors.muted }]}>{t('offlineHint')}</Text>
+          </View>
+        )}
         <View style={styles.topRow}>
           <Text style={[styles.date, { color: colors.muted }]}>{formatHeaderDate(new Date(), lang)}</Text>
           <Pressable
@@ -90,6 +99,10 @@ export default function Home() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   scroll: { padding: spacing.lg, gap: spacing.md },
+  offline: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, borderWidth: 1, borderRadius: radius.card, paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
+  offlineDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#F59E0B' },
+  offlineText: { fontFamily: fonts.sansSemi, fontSize: 13 },
+  offlineHint: { fontFamily: fonts.sans, fontSize: 12, flexShrink: 1 },
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   date: { fontFamily: fonts.mono, fontSize: 11, letterSpacing: 1 },
   gear: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
